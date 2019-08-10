@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title>账单中心</title>
+    <link href="../css/mui.min.css" rel="stylesheet"/>
+    <link href="../css/app.css" rel="stylesheet"/>
+    <style type="text/css">
+    	.mui-control-content {
+			background-color: white;
+			min-height: 500px;
+		}
+		.mui-control-content .mui-loading {
+			margin-top: 50px;
+		}
+		.mui-bar{background-color: #108EE9;height: 65px;}
+			.mui-title{color: #FFFFFF;line-height: 75px;}
+			.mui-bar .mui-icon{padding-top: 25px;}
+			.mui-bar .mui-btn-link {line-height: 75px;}
+    	.mui-row{background-color: #108EE9;}
+		.mui-bar .mui-action-back{color: #FFFFFF;}
+		.mui-bar .mui-title{color: #FFFFFF;}
+    </style>
+</head>
+<body>
+	<header class="mui-bar mui-bar-nav">
+		<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+		<h1 class="mui-title">账单中心</h1>
+	</header>
+	<div class="mui-content" style="padding-top: 65px;">
+		<div class="mui-slider" id="slider">
+			<div id="sliderSegmentedControl" class="mui-slider-indicator mui-segmented-control mui-segmented-control-inverted">
+				<a class="mui-control-item" href="#item1mobile">收益</a>
+				<a class="mui-control-item" href="#item2mobile">转入</a>
+				<a class="mui-control-item" href="#item3mobile">转出</a>
+				<a class="mui-control-item" href="#item4mobile">奖励</a>
+				<a class="mui-control-item" href="#item5mobile">支出</a>
+				<a class="mui-control-item" href="#item6mobile">冻结</a>
+			</div>
+			<div id="sliderProgressBar" class="mui-slider-progress-bar mui-col-xs-2"></div>
+			<div class="mui-slider-group">
+				<!--<div id="item1mobile" class="mui-slider-item mui-control-content mui-active">
+					<div id="scroll1" class="mui-scroll-wrapper">
+						<div class="mui-scroll">
+							<ul class="mui-table-view mui-table-view-striped mui-table-view-condensed">
+								<li class="mui-table-view-cell">
+									<div class="mui-table">
+						                <div class="mui-table-cell mui-col-xs-10">
+						                    <h4 class="mui-ellipsis">收益</h4>
+						                    <h5>2018-03-28 12:25</h5>
+						                </div>
+						                <div class="mui-table-cell mui-col-xs-2 mui-text-right">
+						                    <span class="mui-h5">+0.09</span>
+						                </div>
+						            </div>
+								</li>
+								<li class="mui-table-view-cell">
+									<div class="mui-table">
+						                <div class="mui-table-cell mui-col-xs-10">
+						                    <h4 class="mui-ellipsis">收益</h4>
+						                    <h5>2018-03-28 12:25</h5>
+						                </div>
+						                <div class="mui-table-cell mui-col-xs-2 mui-text-right">
+						                    <span class="mui-h5">+0.09</span>
+						                </div>
+						            </div>
+								</li>
+							</ul>
+						</div>
+					</div>
+				</div>-->
+				<div id="item1mobile" class="mui-slider-item mui-control-content">
+					<div id="scroll1" class="mui-scroll-wrapper">
+						<div class="mui-scroll">
+						</div>
+					</div>
+				</div>
+				<div id="item2mobile" class="mui-slider-item mui-control-content">
+					<div id="scroll2" class="mui-scroll-wrapper">
+						<div class="mui-scroll">
+							<div class="mui-loading">
+								<div class="mui-spinner">
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div id="item3mobile" class="mui-slider-item mui-control-content">
+					<div id="scroll3" class="mui-scroll-wrapper">
+						<div class="mui-scroll">
+							<div class="mui-loading">
+								<div class="mui-spinner">
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div id="item4mobile" class="mui-slider-item mui-control-content">
+					<div id="scroll3" class="mui-scroll-wrapper">
+						<div class="mui-scroll">
+							<div class="mui-loading">
+								<div class="mui-spinner">
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div id="item5mobile" class="mui-slider-item mui-control-content">
+					<div id="scroll3" class="mui-scroll-wrapper">
+						<div class="mui-scroll">
+							<div class="mui-loading">
+								<div class="mui-spinner">
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div id="item6mobile" class="mui-slider-item mui-control-content">
+					<div id="scroll3" class="mui-scroll-wrapper">
+						<div class="mui-scroll">
+							<div class="mui-loading">
+								<div class="mui-spinner">
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<script src="../js/mui.min.js"></script>
+	<script type="text/javascript" src="../js/header.js" ></script>
+    <script type="text/javascript" src="../js/appToken2.js" ></script>
+	<script type="text/javascript" charset="utf-8">
+      	mui.init({
+      		swipeBack:true
+      	});
+      	var item1 = document.getElementById('item1mobile');
+  		var item2 = document.getElementById('item2mobile');
+		var item3 = document.getElementById('item3mobile');
+		var item4 = document.getElementById('item4mobile');
+		var item5 = document.getElementById('item5mobile');
+		var item6 = document.getElementById('item6mobile');
+  		var html2 = "";
+  		var html3 = "";
+  		var html4 = "";
+  		var html5 = "";
+  		var html6 = "";
+  		
+      	(function($){
+      		$('.mui-scroll-wrapper').scroll({
+      			indicators: true //是否显示滚动条
+      		});
+      		
+      		queryRevenues();
+      		queryRevenuesType();
+      		
+			document.getElementById('slider').addEventListener('slide',function(e){
+				if (e.detail.slideNumber === 1) {
+					if (item2.querySelector('.mui-loading')) {
+						setTimeout(function() {
+							item2.querySelector('.mui-scroll').innerHTML = html2;
+						}, 500);
+					}
+				} else if (e.detail.slideNumber === 2) {
+					if (item3.querySelector('.mui-loading')) {
+						setTimeout(function() {
+							item3.querySelector('.mui-scroll').innerHTML = html3;
+						}, 500);
+					}
+				} else if (e.detail.slideNumber === 3) {
+					if (item4.querySelector('.mui-loading')) {
+						setTimeout(function() {
+							item4.querySelector('.mui-scroll').innerHTML = html4;
+						}, 500);
+					}
+				} else if (e.detail.slideNumber === 4) {
+					if (item5.querySelector('.mui-loading')) {
+						setTimeout(function() {
+							item5.querySelector('.mui-scroll').innerHTML = html5;
+						}, 500);
+					}
+				} else if (e.detail.slideNumber === 5) {
+					if (item6.querySelector('.mui-loading')) {
+						setTimeout(function() {
+							item6.querySelector('.mui-scroll').innerHTML = html6;
+						}, 500);
+					}
+				}
+			});
+      	})(mui);
+      	function queryRevenues(){
+      		plus.nativeUI.showWaiting('正在查询，请稍后...');
+      		mui.ajax(url + '/revenues',{
+				dataType:'json',//服务器返回json格式数据
+				type:'get',//HTTP请求类型
+				headers:{'Content-Type':'application/json'},
+				crossDomain:true,
+				success:function(data){
+					//服务器返回响应，根据响应结果，分析是否登录成功；
+					console.log("------------->data = " + data);
+					console.log("------------->data.resultCode = " + data.resultCode);
+					console.log("------------->data.resultMsg = " + data.resultMsg);
+					console.log("------------->data.appToken = " + data.appToken);
+					plus.nativeUI.closeWaiting();
+  					//判断本地存储的appToken是否和服务器的appToken相同
+					checkAppToken(data.appToken);
+					
+					if(data.resultCode == '1001'){
+						//plus.ui.toast("查询矿机列表成功");
+						//把appToken保存到本地
+						//plus.storage.setItem('appToken',data.appToken);
+						//查询成功，把列表显示到页面
+						var html = '<ul class="mui-table-view">';
+						for(var i in data.revenueList){
+							html += '<li class="mui-table-view-cell"><div class="mui-table"><div class="mui-table-cell mui-col-xs-10"><h4 class="mui-ellipsis">收益</h4><h5>'+data.revenueList[i].revenueTimeStr+'</h5></div><div class="mui-table-cell mui-col-xs-2 mui-text-right"><span class="mui-h5">+'+data.revenueList[i].revenue+'</span></div></div></li>';
+						}
+						html += '</ul>';
+						item1.querySelector('.mui-scroll').innerHTML = html;
+					}else if(data.resultCode = '6001'){
+						mui.toast(data.resultMsg);
+					}else if(data.resultCode = '1004'){
+						mui.toast(data.resultMsg);
+					}
+				},
+				error:function(xhr,type,errorThrown){
+					plus.nativeUI.closeWaiting();
+					//异常处理；
+					mui.toast("系统异常！");
+					console.log("异常: " + type);
+				}
+			});
+      	}
+      	
+      	function queryRevenuesType(){
+      		plus.nativeUI.showWaiting('正在查询，请稍后...');
+      		mui.ajax(url + '/otherRevenues',{
+				dataType:'json',//服务器返回json格式数据
+				type:'get',//HTTP请求类型
+				headers:{'Content-Type':'application/json'},
+				crossDomain:true,
+				success:function(data){
+					plus.nativeUI.closeWaiting();
+					//服务器返回响应，根据响应结果，分析是否登录成功；
+					console.log("------------->data = " + data);
+					console.log("------------->data.resultCode = " + data.resultCode);
+					console.log("------------->data.resultMsg = " + data.resultMsg);
+					console.log("------------->data.appToken = " + data.appToken);
+					//判断本地存储的appToken是否和服务器的appToken相同
+					if(data.resultCode == '1001'){
+						//plus.ui.toast("查询矿机列表成功");
+						//把appToken保存到本地
+						//plus.storage.setItem('appToken',data.appToken);
+						//查询成功，把列表显示到页面
+						html2 = '<ul class="mui-table-view">';
+						for(var i in data.incomes){
+							html2 += '<li class="mui-table-view-cell"><div class="mui-table"><div class="mui-table-cell mui-col-xs-10"><h4 class="mui-ellipsis">转入</h4><h5>'+data.incomes[i].revenueTimeStr+'</h5></div><div class="mui-table-cell mui-col-xs-2 mui-text-right"><span class="mui-h5">+'+data.incomes[i].revenue+'</span></div></div></li>';
+						}
+			      		html2 += "</ul>"
+									      		
+						html3 = '<ul class="mui-table-view">';
+						for(var i in data.outcomes){
+							html3 += '<li class="mui-table-view-cell"><div class="mui-table"><div class="mui-table-cell mui-col-xs-10"><h4 class="mui-ellipsis">转出</h4><h5>'+data.outcomes[i].revenueTimeStr+'</h5></div><div class="mui-table-cell mui-col-xs-2 mui-text-right"><span class="mui-h5">-'+data.outcomes[i].revenue+'</span></div></div></li>';
+						}
+						html3 += '</ul>';
+						
+						html4 = '<ul class="mui-table-view">';
+						for(var i in data.rewards){
+							html4 += '<li class="mui-table-view-cell"><div class="mui-table"><div class="mui-table-cell mui-col-xs-10"><h4 class="mui-ellipsis">奖励</h4><h5>'+data.rewards[i].revenueTimeStr+'</h5></div><div class="mui-table-cell mui-col-xs-2 mui-text-right"><span class="mui-h5">+'+data.rewards[i].revenue+'</span></div></div></li>';
+						}
+						html4 += '</ul>';
+						
+						html5 = '<ul class="mui-table-view">';
+						for(var i in data.expenses){
+							html5 += '<li class="mui-table-view-cell"><div class="mui-table"><div class="mui-table-cell mui-col-xs-10"><h4 class="mui-ellipsis">支出</h4><h5>'+data.expenses[i].revenueTimeStr+'</h5></div><div class="mui-table-cell mui-col-xs-2 mui-text-right"><span class="mui-h5">-'+data.expenses[i].revenue+'</span></div></div></li>';	
+						}
+						html5 += '</ul>';
+						
+						html6 = '<ul class="mui-table-view">';
+						for(var i in data.freezes){
+							html6 += '<li class="mui-table-view-cell"><div class="mui-table"><div class="mui-table-cell mui-col-xs-10"><h4 class="mui-ellipsis">冻结</h4><h5>'+data.freezes[i].revenueTimeStr+'</h5></div><div class="mui-table-cell mui-col-xs-2 mui-text-right"><span class="mui-h5">+'+data.freezes[i].revenue+'</span></div></div></li>';
+						}
+						html6 += '</ul>';
+						
+						
+					}else if(data.resultCode = '1004'){
+						mui.toast(data.resultMsg);
+					}
+				},
+				error:function(xhr,type,errorThrown){
+					plus.nativeUI.closeWaiting();
+					//异常处理；
+					mui.toast("系统异常！");
+					console.log("异常: " + type);
+				}
+			});
+      	}
+    </script>
+</body>
+</html>

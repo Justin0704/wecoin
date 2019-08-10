@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title>矿市</title>
+    <script src="js/mui.min.js"></script>
+    <script src="js/app.js"></script>
+    <script type="text/javascript" src="js/header.js" ></script>
+    <script type="text/javascript" src="js/appToken.js" ></script>
+    <script type="text/javascript" src="js/order.js" ></script>
+    <script src="js/echarts-all.js" type="text/javascript"></script>
+    <link href="css/mui.min.css" rel="stylesheet"/>
+    <style type="text/css">
+    	/*.mui-content{margin: 12px;}*/
+    	.mui-btn{width: 95%;}
+    	.chart {
+			height: 200px;
+			width:300px;
+			margin: 0px;
+			padding: 0px;
+		}
+		#div {  
+            width: 0px;  
+            height: 0px;  
+            background: red;  
+            position: fixed;  
+            top: 70%;  
+            left: 50%;  
+        }  
+        /*移除底部或顶部三角,需要在删除此代码*/  
+        .mui-popover .mui-popover-arrow:after {  
+            width: 0px;  
+        }
+        #lineChart{width: 310px;height: 200px;}
+        .mui-btn{width: 95%;}
+    	.mui-bar{background-color: #108EE9;height: 65px;}
+    	.mui-bar .mui-icon {
+    		padding-top: 28px;
+    	}
+    	.mui-row{background-color: #108EE9;}
+		.mui-title{color: #FFFFFF;line-height: 75px;}
+		.mui-scroll-wrapper {
+			top: 15px;
+		}
+    </style>
+</head>
+<body>
+	
+	<header class="mui-bar mui-bar-nav">
+		<a class="mui-icon mui-icon mui-icon-help mui-pull-right" id="getStarted" style="color:#FFFFFF"></a>
+		<h1 id="title" class="mui-title">矿市</h1>
+	</header>
+	<div id="pullrefresh" class="mui-content mui-scroll-wrapper">
+		<div class="mui-scroll">
+			<div class="mui-row" style="margin-bottom: 12px;">
+				<ul class="mui-table-view mui-grid-view mui-grid-12">
+					<li class="mui-table-view-cell mui-media mui-col-sm-3 mui-col-xs-3">
+						<a id="newhand">
+							<!--<span class="mui-icon mui-icon-home"></span>-->
+							<img src="img/newhand.jpg" width="60px" height="60px" />
+							<div class="mui-media-body">新手挂单</div>
+						</a>
+					</li>
+					<li class="mui-table-view-cell mui-media mui-col-sm-3 mui-col-xs-3">
+						<a id="advanced">
+							<!--<span class="mui-icon mui-icon-email"></span>-->
+							<img src="img/advanced.jpg" width="60px" height="60px" />
+							<div class="mui-media-body">进阶挂单</div>
+						</a>
+					</li>
+					<li class="mui-table-view-cell mui-media mui-col-sm-3 mui-col-xs-3">
+						<a id="killer">
+							<!--<span class="mui-icon mui-icon-pengyouquan"></span>-->
+							<img src="img/killer.jpg" width="60px" height="60px" />
+							<div class="mui-media-body">高手挂单</div>
+						</a>
+					</li>
+					<li class="mui-table-view-cell mui-media mui-col-sm-3 mui-col-xs-3">
+						<a id="international">
+							<!--<span class="mui-icon mui-icon-map"></span>-->
+							<img src="img/international.jpg" width="60px" height="60px" />
+							<div class="mui-media-body">国际挂单</div>
+						</a>
+					</li>
+				</ul>
+			</div>
+			<div id="market" class="mui-slider-indicator mui-segmented-control mui-segmented-control-inverted">
+				<a class="mui-control-item mui-active" href="#item1">价格</a>
+				<a class="mui-control-item" href="#item2">点对点</a>
+				<a class="mui-control-item" href="#item3" id="myOrders">信箱</a>
+			</div>
+			<div>
+				<div id="item1" class="mui-control-content mui-active">
+					<div class="mui-content-padded" id="echarts">
+						<div class="chart" id="lineChart"></div>
+					</div>
+					<div class="mui-content-padded" id="echarts2">
+						<div class="chart" id="lineChart2"></div>
+					</div>
+				</div>
+				<div id="item2" class="mui-control-content">
+					<div class="mui-content-padded" id="p2p">
+						<form id='login-form' class="mui-input-group">
+							<div class="mui-input-row">
+								<label>ID号</label>
+								<input type="text" class="mui-input-clear mui-input" placeholder="请输入买家的ID号" id="buyerNo" value=""/>
+							</div>
+							<div class="mui-input-row">
+								<label>数量</label>
+								<input type="text" class="mui-input-clear mui-input" placeholder="请输入售出的数量" id="amount" value=""/>
+							</div>
+							<div class="mui-input-row">
+								<label>约定价</label>
+								<input type="text" class="mui-input-clear mui-input" placeholder="请输入约定价格" id="agreementPrice" value=""/>
+							</div>
+						</form>
+						<h5>*交易手续费20%；如转100WBT，系统将扣120WBT。</h5><div class="mui-content-padded">
+							<button type="button" class="mui-btn mui-btn-yellow" id="sellOutBtn" disabled="">卖出</button>
+						</div>
+					</div>
+				</div>
+				<div id="item3" class="mui-control-content">
+					<div id="myMessages">
+						<h5 align="center">私人信箱</h5>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div id="div"></div>
+	<div id="popover" class="mui-popover">
+	</div>
+	<script type="text/javascript" charset="utf-8">
+      	mui.init({
+      		pullRefresh: {
+				container: '#pullrefresh',
+				down: {
+					height:50,//可选,默认50.触发下拉刷新拖动距离,
+			        auto: false,//可选,默认false.首次加载自动下拉刷新一次
+			        contentdown : "下拉可以刷新",//可选，在下拉可刷新状态时，下拉刷新控件上显示的标题内容
+			        contentover : "释放立即刷新",//可选，在释放可刷新状态时，下拉刷新控件上显示的标题内容
+			        contentrefresh : "正在刷新...",//可选，正在刷新状态时，下拉刷新控件上显示的标题内容
+					callback: pulldownRefresh
+				}/*,
+				up: {
+					contentrefresh: '正在加载...',
+					callback: pullupRefresh
+				}*/
+			}
+      	});
+      	/**
+		 * 下拉刷新具体业务实现
+		 */
+		function pulldownRefresh() {
+			setTimeout(function() {
+				isMember();//判断用户是否是会员
+				query5DaysWbtPrice();
+				mui('#pullrefresh').pullRefresh().endPulldownToRefresh(); //refresh completed
+			}, 500);
+		}
+      	mui.plusReady(function(){
+			//mui.toast("加载矿市页面");
+			isMember();//判断用户是否是会员
+			query5DaysWbtPrice();
+			var sellOutBtn = document.getElementById("sellOutBtn");
+			sellOutBtn.addEventListener('tap',function(){
+				var buyerNo = document.getElementById("buyerNo");
+				var amount = document.getElementById("amount");
+				var agreementPrice = document.getElementById("agreementPrice");
+				if(buyerNo.value.length == 0){
+					plus.ui.toast("请输入买家的ID号");
+					return;
+				}
+				if(amount.value.length == 0){
+					plus.ui.toast("请输入出售的数量");
+					return;
+				}
+				if(agreementPrice.value.length == 0){
+					plus.ui.toast("请输入约定的价格");
+					return;
+				}
+				var regex1 = "^[0-9]*[1-9][0-9]*$";
+				var mAmount = new RegExp(regex1);
+				if(!mAmount.test(amount.value)){
+					plus.ui.toast("数量格式不正确");
+					return;
+				}
+				var regex2 = /(^[1-9]\d*(\.\d{1,2})?$)|(^0(\.\d{1,2})?$)/;
+				if(!regex2.test(agreementPrice.value)){
+					plus.ui.toast("价格格式不正确");
+					return;
+				}
+				console.log("buyerNo = " + buyerNo.value + " ,amount = " + amount.value + " ,agreementPrice = " + agreementPrice.value);
+				//先验证买家是否是同一人、是否存在、是否有足够的数量
+				checkUserInfo(buyerNo,amount,agreementPrice);
+			});
+			var myOrders = document.getElementById("myOrders");
+			myOrders.addEventListener('tap',function(){
+				//plus.ui.toast("我的信箱");
+				showMyOrders();
+			});
+			mui("#newhand")[0].addEventListener('tap',function(event){
+				mui.openWindow({
+					url: 'market/newhand.html'
+				});
+			});
+			mui("#advanced")[0].addEventListener('tap',function(event){
+				mui.openWindow({
+					url: 'market/advanced.html',
+					id: 'advanced',
+					preload: true,
+					show: {
+						aniShow: 'pop-in'
+					},
+					styles: {
+						popGesture: 'hide'
+					},
+					waiting: {
+						autoShow: false
+					}
+				});
+			});
+			mui("#killer")[0].addEventListener('tap',function(event){
+				mui.openWindow({
+					url: 'market/killer.html',
+					id: 'killer',
+					preload: true,
+					show: {
+						aniShow: 'pop-in'
+					},
+					styles: {
+						popGesture: 'hide'
+					},
+					waiting: {
+						autoShow: false
+					}
+				});
+			});
+			mui("#international")[0].addEventListener('tap',function(event){
+				/*mui.openWindow({
+					url: 'market/international.html',
+					id: 'international',
+					preload: true,
+					show: {
+						aniShow: 'pop-in'
+					},
+					styles: {
+						popGesture: 'hide'
+					},
+					waiting: {
+						autoShow: false
+					}
+				});*/
+				mui.toast("国际挂单敬请期待！");
+			});
+			mui("#getStarted")[0].addEventListener('tap',function(event){
+				mui.openWindow({
+					url: 'settings/getStarted.html'
+				});
+			});
+			
+		});
+		function query5DaysWbtPrice(){
+			
+			mui.ajax(url + '/query5DaysWbtPrice',{
+				dataType:'json',//服务器返回json格式数据
+				type:'get',//HTTP请求类型
+				headers:{'Content-Type':'application/json'},
+				crossDomain:true,
+				success:function(data){
+					//服务器返回响应，根据响应结果，分析是否登录成功；
+					console.log("------------->data = " + data);
+					console.log("------------->data.resultCode = " + data.resultCode);
+					console.log("------------->data.resultMsg = " + data.resultMsg);
+					console.log("------------->data.dateArray = " + data.dateArray);
+					console.log("------------->data.priceArray = " + data.priceArray);
+					console.log("------------->data.ethArray = " + data.ethArray);
+					checkAppToken(data.appToken);
+					
+					if(data.resultCode == '1001'){
+						
+						var myChart=echarts.init(document.getElementById('lineChart'));//获取容器
+				        myChart.setOption({
+				            title: {
+				                //text: '异步数据加载示例'
+				            },
+				            tooltip: {},
+				            legend: {
+				                data:['WBT价格']
+				            },
+				            xAxis: {
+				                data: eval(data.dateArray)
+				            },
+				            yAxis: {},
+				            series: [{
+				                name: '实时价格',
+				                type: 'bar',
+				                data: eval(data.priceArray)
+				            }]
+				        });
+				        var myChart=echarts.init(document.getElementById('lineChart2'));//获取容器
+				        myChart.setOption({
+				            title: {
+				                //text: '异步数据加载示例'
+				            },
+				            tooltip: {},
+				            legend: {
+				                data:['ETH价格']
+				            },
+				            xAxis: {
+				                data: eval(data.dateArray)
+				            },
+				            yAxis: {},
+				            series: [{
+				                name: '实时价格',
+				                type: 'line',
+				                data: eval(data.ethArray)
+				            }]
+				        });
+					}else if(data.resultCode == '1002'){
+						mui.toast(data.resultMsg);
+					}else if(data.resultCode == '1004'){
+						mui.toast(data.resultMsg);
+					}
+				},
+				error:function(xhr,type,errorThrown){
+					//异常处理；
+					mui.toast("系统异常！");
+					console.log("异常: " + type);
+				}
+			});
+		}
+    </script>
+</body>
+</html>

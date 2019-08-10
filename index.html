@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title>登录</title>
+	<link rel="stylesheet" href="css/assets/reset.css" />
+	<link rel="stylesheet" href="css/assets/supersized.css" />
+	<link rel="stylesheet" href="css/assets/style.css" />
+	<style type="text/css">
+		#rememberMe {
+			border-radius: 3px;
+		}
+	</style>
+</head>
+<body>
+	
+	<div class="page-container">
+        <h2>登录</h2>
+        <!--<img src="img/180x180.png" width="80px;" height="80px;" />-->
+        <form action="" method="post">
+            <input type="text" id="account" class="username" placeholder="请输入您的ID或手机号" value="" /><br/>
+            <input type="password" id="passwd" class="password" placeholder="请输入您的密码" value="" /><br/>
+            <input name="rememberMe" id="rememberMe" value="Y" type="checkbox" style="width: 20px;height: 20px;">记住我
+        </form>
+        <button type="button" class="submit_button" id="login">登录</button>
+        <div class="connect">
+            <p id="reg">注册账号</p>
+            <br />
+            <p id="forgetPassword">忘记密码</p>
+        </div>
+    </div>
+		
+	<script type="text/javascript" src="js/assets/jquery-1.8.2.min.js" ></script>
+	<script src="js/mui.min.js"></script>
+	<script src="js/app.js"></script>
+	<script type="text/javascript" src="js/header.js" ></script>
+	<script type="text/javascript" src="js/assets/supersized.3.2.7.min.js" ></script>
+	<script type="text/javascript" src="js/assets/supersized-init.js" ></script>
+	
+	<script type="text/javascript" charset="utf-8">
+      	mui.init({
+      		
+      	});
+      	mui.plusReady(function(){
+      		plus.screen.lockOrientation("portrait-primary");
+      		//plus.navigator.setFullscreen(true);
+      		//打开登录页面把密码传过来
+      		rememberIt();
+      		var reg = document.getElementById("reg");
+      		var forgetPwd = document.getElementById("forgetPassword");
+      		var login = document.getElementById("login");
+      		var rememberMe = document.getElementById("rememberMe");
+      		
+      		var account = document.getElementById("account");
+      		var passwd = document.getElementById("passwd");
+      		
+      		login.addEventListener('tap',function(){
+				
+				
+      			if(account.value.length == 0){
+      				plus.ui.toast("账号不能为空");
+      				return;
+      			}
+      			if(passwd.value.length == 0){
+      				plus.ui.toast("密码不能为空");
+      				return;
+      			}
+      			//判断rememberMe是否选中
+      			var checked = document.getElementById("rememberMe").checked
+      			if(checked){
+      				plus.storage.setItem("userCount",account.value);
+					plus.storage.setItem("userPasswd",passwd.value);
+      			}else{
+      				plus.storage.setItem("userCount",'');
+  					plus.storage.setItem("userPasswd",'');
+      			}
+      			
+      			console.log("account = " + account.value);
+      			console.log("passwd = " + passwd.value);
+      			plus.nativeUI.showWaiting('正在登录，请稍后...');
+      			mui.ajax(url + '/login',{
+					data:{
+						"account": account.value,
+      					"passwd": passwd.value
+					},
+					dataType:'json',//服务器返回json格式数据
+					type:'post',//HTTP请求类型
+					headers:{'Content-Type':'application/json'},
+					crossDomain:true,
+					success:function(data){
+						plus.nativeUI.closeWaiting();
+						//服务器返回响应，根据响应结果，分析是否登录成功；
+						console.log("------------->data = " + data);
+						console.log("------------->data.resultCode = " + data.resultCode);
+						console.log("------------->data.resultMsg = " + data.resultMsg);
+						
+						if(data.resultCode == '1001'){
+							mui.openWindow({url:'tab-webview-main.html',id:'list'});
+							//plus.ui.toast("登陆成功");
+							//把appToken保存到本地
+							plus.storage.setItem('appToken',data.appToken);
+							plus.storage.setItem("userInfo",data.userInfo);
+							console.log("@@@@@----------->userInfo = " + plus.storage.getItem("userInfo"));
+							var jsonObj = JSON.parse(plus.storage.getItem("userInfo"));
+						}else if(data.resultCode = '4001'){
+							mui.toast(data.resultMsg);
+						}else if(data.resultCode == '4002'){
+							mui.toast(data.resultMsg);
+						}
+					},
+					error:function(xhr,type,errorThrown){
+						plus.nativeUI.closeWaiting();
+						//异常处理；
+						mui.toast("系统异常！");
+						console.log("异常: " + type);
+					}
+				});
+      		});
+      		/*rememberMe.addEventListener('change',function(event){
+      			if(account.value.length == 0){
+      				plus.ui.toast("账号不能为空");
+      				this.checked = false;
+      				return;
+      			}
+      			if(passwd.value.length == 0){
+      				plus.ui.toast("密码不能为空");
+      				this.checked = false;
+      				return;
+      			}
+      			var value = this.checked?"true":"false";
+      			console.log("rememberMe = " + value);
+      			if(value){
+      				plus.storage.setItem("userCount",account);
+					plus.storage.setItem("userPasswd",passwd);
+  				}else{
+  					plus.storage.setItem("userCount",'');
+  					plus.storage.setItem("userPasswd",'');
+  				}
+      		});*/
+      		reg.addEventListener('tap',function(){
+      			mui.openWindow({
+      				url: 'mregister.html'
+      			});
+      		});
+      		forgetPwd.addEventListener('tap',function(){
+      			mui.openWindow({
+      				url: 'mforgetPwd.html'
+					/*id: 'mforgetPwd',
+					preload: true,
+					show: {
+						aniShow: 'pop-in'
+					},
+					styles: {
+						popGesture: 'hide'
+					},
+					waiting: {
+						autoShow: false
+					}*/
+      			});
+      		});
+      		//网络监测
+      		document.addEventListener("netchange",function(){
+      			if(plus.networkinfo.getCurrentType() == plus.networkinfo.CONNECTION_NONE){
+      				mui.toast('网络异常，请检查网络设置!');
+      			}/*else{
+      				mui.toast('已连接网络')
+      			}*/
+      		},false);
+      		if(plus.networkinfo.getCurrentType() == plus.networkinfo.CONNECTION_NONE || plus.networkinfo.getCurrentType() == plus.networkinfo.CONNECTION_UNKNOW){
+      			mui.toast('未连接网络，请连接！');
+      		}
+      		// 退出的逻辑
+			var backButtonPress = 0;
+			mui.back = function(event) {
+				backButtonPress++;
+				if (backButtonPress > 1) {
+					plus.runtime.quit();
+				} else {
+					plus.nativeUI.toast('再按一次退出应用');
+				}
+				setTimeout(function() {
+					backButtonPress = 0;
+				}, 1000);
+				return false;
+			};
+      	});
+      	function rememberIt(){
+      		console.log("记住我.............");
+      		var account = plus.storage.getItem("userCount");
+			var passwd = plus.storage.getItem("userPasswd");
+			
+			if(account != null && passwd != null){
+				if(account.length != 0 && passwd.length != 0){
+					document.getElementById("rememberMe").checked = true;
+				}else{
+					document.getElementById("rememberMe").checked = false;
+				}
+			}
+			document.getElementById("account").value = account;
+			document.getElementById("passwd").value = passwd;
+      	}
+    </script>
+</body>
+</html>

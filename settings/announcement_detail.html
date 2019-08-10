@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Hello MUI</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<link href="../css/mui.min.css" rel="stylesheet"/>
+		<link rel="stylesheet" href="../css/common.css" type="text/css" charset="utf-8"/>
+		<style>
+			.mui-bar{background-color: #108EE9;height: 65px;}
+			.mui-title{color: #FFFFFF;line-height: 75px;}
+			.mui-bar .mui-icon{padding-top: 25px;}
+			.mui-bar .mui-btn-link {line-height: 75px;}
+	    	.mui-row{background-color: #108EE9;}
+			.mui-bar .mui-action-back{color: #FFFFFF;}
+			.mui-bar .mui-title{color: #FFFFFF;}
+		</style>
+	</head>
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">消息详细</h1>
+		</header>
+		<div class="mui-content"  style="padding-top: 65px;">
+			<br/>
+			<div align="center"><h5 id="title"></h5></div>
+			<br />
+			<div align="center"><h6 id="time"></h6></div>
+			<br />
+			<div class="des"><h4 id="content"></h4></div>
+			<br />
+		</div>
+		<script src="../js/mui.min.js"></script>
+		<script type="text/javascript" src="../js/header.js" ></script>
+    	<script type="text/javascript" src="../js/appToken2.js" ></script>
+		<script src="../js/mui.picker.min.js"></script>
+		<script>
+			mui.init({
+	      		swipeBack:true
+	      	});
+			mui.plusReady(function(){
+	      		console.log("消息详细显示。。。。。。。。。。");
+	      		var self=plus.webview.currentWebview();//获取当前窗体对象
+				var val=self.announcementId;//接收A页面传入的id参数值
+	      		
+	      		console.log("val = " + val);
+	      		
+	      		mui.ajax(url + '/announcementDetail',{
+					data:{
+						"id": val
+					},
+      				dataType:'json',//服务器返回json格式数据
+					type:'post',//HTTP请求类型
+					headers:{'Content-Type':'application/json'},
+					crossDomain:true,
+      				success:function(data){
+      					
+      					//处理成功返回的数据
+      					if(data.resultCode == '1001'){
+      						document.getElementById("title").innerHTML = data.announcementDetail.title;
+      						document.getElementById("time").innerHTML = data.announcementDetail.createTimeStr;
+      						document.getElementById("content").innerHTML = data.announcementDetail.content;
+	  					}else if(data.resultCode = '1004'){//会话过期跳转到登陆页面
+	  						//resumeBtn(msubmit);
+	  						mui.toast(data.resultMsg);
+	  						return;
+	  					}else if(data.resultCode = '1002'){//服务器异常
+	  						//resumeBtn(msubmit);
+	  						mui.toast(data.resultMsg);
+	  						return;
+	  					}
+      				},
+      				error:function(data){
+      					mui.toast("修改出现异常！");
+      					//resumeBtn(msubmit);
+	  					console.log("异常" + type);
+      				}
+      			});
+	      	});
+			
+		</script>
+	</body>
+
+</html>

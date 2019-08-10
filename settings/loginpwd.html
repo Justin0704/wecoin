@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title>登陆</title>
+    <script src="../js/mui.min.js"></script>
+    <script type="text/javascript" src="../js/header.js" ></script>
+    <script type="text/javascript" src="../js/appToken2.js" ></script>
+    <link href="../css/mui.min.css" rel="stylesheet"/>
+    <style type="text/css">
+    	.area {
+				margin: 20px auto 0px auto;
+			}
+			
+			.mui-input-group {
+				margin-top: 10px;
+			}
+			
+			.mui-input-group:first-child {
+				margin-top: 20px;
+			}
+			
+			.mui-input-group label {
+				width: 22%;
+			}
+			
+			.mui-input-row label~input,
+			.mui-input-row label~select,
+			.mui-input-row label~textarea {
+				width: 78%;
+			}
+			
+			.mui-checkbox input[type=checkbox],
+			.mui-radio input[type=radio] {
+				top: 6px;
+			}
+			
+			.mui-content-padded {
+				margin-top: 25px;
+			}
+			
+			.mui-btn {
+				padding: 10px;
+			}
+			
+			.link-area {
+				display: block;
+				margin-top: 25px;
+				text-align: center;
+			}
+			
+			.spliter {
+				color: #bbb;
+				padding: 0px 8px;
+			}
+		.mui-bar{background-color: #108EE9;height: 65px;}
+			.mui-title{color: #FFFFFF;line-height: 75px;}
+			.mui-bar .mui-icon{padding-top: 25px;}
+			.mui-bar .mui-btn-link {line-height: 75px;}
+    	.mui-row{background-color: #108EE9;}
+		.mui-bar .mui-action-back{color: #FFFFFF;}
+		.mui-bar .mui-title{color: #FFFFFF;}
+    </style>
+</head>
+<body>
+	<header class="mui-bar mui-bar-nav">
+		<h1 class="mui-title">登陆</h1>
+	</header>
+	<div class="mui-content" style="padding-top: 65px;">
+		<form id='login-form' class="mui-input-group">
+			<div class="mui-navbar-inner mui-bar mui-bar-nav">
+				<button type="button" class="mui-left mui-action-back mui-btn  mui-btn-link mui-btn-nav mui-pull-left">
+					<span class="mui-icon mui-icon-left-nav"></span>我的
+				</button>
+				<h1 class="mui-center mui-title">设置登录密码</h1>
+				<!--<button type="button" class="mui-right mui-action-back mui-btn  mui-btn-link mui-btn-nav mui-pull-right">
+					<span class="mui-icon"></span>完成
+				</button>-->
+			</div>
+			<div class="mui-input-row mui-password">
+				<input type="password" class="mui-input-password mui-number" placeholder="请输入登录密码" id="passwd" value=""/>
+			</div>
+			<div class="mui-input-row mui-password">
+				<input type="password" class="mui-input-password mui-number" placeholder="请确认登录密码" id="repasswd" value=""/>
+			</div>
+		</form>
+		<div class="mui-content-padded">
+			<button type="button" class="mui-btn mui-btn-block mui-btn-primary" id="mSubmit">提交</button>
+		</div>
+	</div>
+	<script type="text/javascript" charset="utf-8">
+      	mui.init({
+      		swipeBack:true
+      	});
+      	mui.plusReady(function(){
+      		console.log("修改登陆密码信息");
+      		clearBox();
+      		updateUserInfo();
+      	});
+      	
+      	function clearBox(){
+      		document.getElementById("passwd").value = "";
+      		document.getElementById("repasswd").value = "";
+      	}
+      	
+      	function updateUserInfo(){
+      		var passwd = document.getElementById("passwd");
+      		var repasswd = document.getElementById("repasswd");
+			      		
+      		var mSubmit = document.getElementById("mSubmit");
+      		mSubmit.addEventListener('tap',function(){
+      			if(passwd.value.length == 0){
+      				plus.ui.toast("请输入新密码");
+      				return;
+      			}
+      			if(repasswd.value.length == 0){
+      				plus.ui.toast("请输入确认新密码");
+      				return;
+      			}
+      			if(passwd.value != repasswd.value){
+      				plus.ui.toast("新密码和确认密码不一致");
+      				return;
+      			}
+      			plus.nativeUI.showWaiting('正在编辑，请稍后...');
+      			mui.ajax(url + '/updateUser',{
+      				data:{
+      					"passwd":passwd.value,
+      				},
+      				dataType:'json',//服务器返回json格式数据
+					type:'post',//HTTP请求类型
+					headers:{'Content-Type':'application/json'},
+					crossDomain:true,
+      				success:function(data){
+      					plus.nativeUI.closeWaiting();
+      					//判断本地存储的appToken是否和服务器的appToken相同
+						checkAppToken(data.appToken);
+      					//处理成功返回的数据
+      					if(data.resultCode == '4012'){
+	  						mui.toast(data.resultMsg);
+	  						//跳转到前一页
+	  						mui.back();
+	  						return;
+	  					}else if(data.resultCode = '1004'){//会话过期跳转到登陆页面
+	  						mui.toast(data.resultMsg);
+	  						return;
+	  					}else if(data.resultCode = '1002'){//服务器异常
+	  						mui.toast(data.resultMsg);
+	  						return;
+	  					}
+      				},
+      				error:function(data){
+      					mui.toast("修改出现异常！");
+	  					console.log("异常" + type);
+      				}
+      			});
+      		});
+      	}
+    </script>
+</body>
+</html>

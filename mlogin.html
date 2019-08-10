@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title>登录</title>
+    <link href="css/mui.min.css" rel="stylesheet"/>
+    <link href="css/StyleSheet.css" rel="stylesheet" />
+	<link href="css/reg.css" rel="stylesheet" />
+    <style type="text/css">
+    	.area {
+				margin: 20px auto 0px auto;
+			}
+			
+			.mui-input-group {
+				margin-top: 10px;
+			}
+			
+			.mui-input-group:first-child {
+				margin-top: 20px;
+			}
+			
+			.mui-input-group label {
+				width: 22%;
+			}
+			
+			.mui-input-row label~input,
+			.mui-input-row label~select,
+			.mui-input-row label~textarea {
+				width: 78%;
+			}
+			
+			.mui-checkbox input[type=checkbox],
+			.mui-radio input[type=radio] {
+				top: 6px;
+			}
+			
+			.mui-content-padded {
+				margin-top: 25px;
+			}
+			
+			.mui-btn {
+				padding: 10px;
+			}
+			
+			.link-area {
+				display: block;
+				margin-top: 25px;
+				text-align: center;
+			}
+			
+			.spliter {
+				color: #bbb;
+				padding: 0px 8px;
+			}
+			
+    </style>
+</head>
+<body>
+	<header class="mui-bar mui-bar-nav">
+		<h1 class="mui-title">登录</h1>
+	</header>
+	<div class="mui-content">
+		<div class="mui-input-row" align="center" style="background-color:#F0AD4E">
+				<img src="img/wallet.png" />
+		</div>
+		<form id='login-form' class="mui-input-group">
+			
+			<div class="mui-input-row">
+				<label><span class="mui-icon iconfont mui-icon-person"></span></label>
+				<input type="text" class="mui-input-clear mui-input" placeholder="请输入您的ID或手机号" id="account" value="10001"/>
+			</div>
+			<div class="mui-input-row">
+				<label><span class="mui-icon mui-icon-locked"></span></label>
+				<input type="password" class="mui-input-clear mui-input" placeholder="请输入您的密码" id="passwd" value="qqqqqq"/>
+			</div>
+		</form>
+		<form class="mui-input-group">
+			<ul class="mui-table-view mui-table-view-chevron">
+				<!--<li class="mui-table-view-cell">
+					记住密码
+					<div id="rememberMe" class="mui-switch" data-off="关" data-on = "开">
+						<div class="mui-switch-handle"></div>
+					</div>
+				</li>-->
+					
+			</ul>
+			<div class="mui-input-row mui-checkbox">
+				<label>记住我</label>
+			    <input name="rememberMe" id="rememberMe" value="Y" type="checkbox" checked>
+			</div>
+		</form>
+		<div class="mui-content-padded">
+			<button type="button" class="mui-btn mui-btn-block mui-btn-primary" id="login">登陆</button>
+			<div class="link-area">
+				<a id="reg">注册账号</a><span class="spliter">|</span><a id='forgetPassword'>忘记密码</a>
+			</div>
+		</div>
+	</div>
+	<script src="js/mui.min.js"></script>
+	<script src="js/app.js"></script>
+	<script type="text/javascript" src="js/header.js" ></script>
+	<script type="text/javascript" charset="utf-8">
+      	mui.init({
+      		statusBarBackground: '#f7f7f7'
+      	});
+      	mui.plusReady(function(){
+      		plus.screen.lockOrientation("portrait-primary");
+      		
+      		/*var userPasswd=plus.storage.getItem('userPasswd');
+      		if(userPasswd != ''){
+      			document.getElementById("passwd").value = userPasswd;
+      			document.getElementById("rememberMe").addClass('mui-active');
+      		}else{
+      			document.getElementById("rememberMe").removeClass('mui-active');
+      		}*/
+      		/*if(settings.autoLogin){
+				if (userPasswd!='') {
+					document.getElementById('passwd').value=userPasswd;
+					setTimeout(function(){
+						toMain();
+					},300);
+				}
+			}*/
+      		var reg = document.getElementById("reg");
+      		var forgetPwd = document.getElementById("forgetPassword");
+      		var login = document.getElementById("login");
+      		var rememberMe = document.getElementById("rememberMe");
+      		
+      		login.addEventListener('tap',function(){
+				
+				var account = document.getElementById("account");
+      			var passwd = document.getElementById("passwd");
+      			if(account.value.length == 0){
+      				plus.ui.toast("账号不能为空");
+      				return;
+      			}
+      			if(passwd.value.length == 0){
+      				plus.ui.toast("密码不能为空");
+      				return;
+      			}
+      			console.log("account = " + account.value);
+      			console.log("passwd = " + passwd.value);
+      			mui.ajax(url + '/login',{
+					data:{
+						"account": account.value,
+      					"passwd": passwd.value
+					},
+					dataType:'json',//服务器返回json格式数据
+					type:'post',//HTTP请求类型
+					headers:{'Content-Type':'application/json'},
+					crossDomain:true,
+					success:function(data){
+						//服务器返回响应，根据响应结果，分析是否登录成功；
+						console.log("------------->data = " + data);
+						console.log("------------->data.resultCode = " + data.resultCode);
+						console.log("------------->data.resultMsg = " + data.resultMsg);
+						
+						if(data.resultCode == '1001'){
+							mui.openWindow({url:'tab-webview-main.html',id:'list'});
+							plus.ui.toast("登陆成功");
+							//把appToken保存到本地
+							plus.storage.setItem('appToken',data.appToken);
+							plus.storage.setItem("userInfo",data.userInfo);
+							console.log("@@@@@----------->userInfo = " + plus.storage.getItem("userInfo"));
+							var jsonObj = JSON.parse(plus.storage.getItem("userInfo"));
+						}else if(data.resultCode = '4001'){
+							mui.toast(data.resultMsg);
+						}else if(data.resultCode == '4002'){
+							mui.toast(data.resultMsg);
+						}
+					},
+					error:function(xhr,type,errorThrown){
+						//异常处理；
+						mui.toast("系统异常！");
+						console.log("异常: " + type);
+					}
+				});
+      		});
+      		var isRemember = false;
+      		rememberMe.addEventListener('toggle',function(event){
+      			/*if(event.detail.isActive){
+					plus.storage.setItem("userPasswd",document.getElementById("passwd").value);
+  				}else{
+  					plus.storage.setItem("userPasswd",'');
+  				}*/
+  				//mui("#rememberMe").switch().toggle();
+  				/*if(isRemember){
+  					var self = this;
+	  				setTimeout(function() {
+						mui(self)['switch']().toggle();
+					}, 200);
+  				}else{
+  					isRemember = false;
+  				}*/
+      		});
+      		reg.addEventListener('tap',function(){
+      			mui.openWindow({
+      				url: 'register.html',
+					id: 'register',
+					preload: true,
+					show: {
+						aniShow: 'pop-in'
+					},
+					styles: {
+						popGesture: 'hide'
+					},
+					waiting: {
+						autoShow: false
+					}
+      			});
+      		});
+      		forgetPwd.addEventListener('tap',function(){
+      			mui.openWindow({
+      				url: 'forgetPwd.html',
+					id: 'forgetPwd',
+					preload: true,
+					show: {
+						aniShow: 'pop-in'
+					},
+					styles: {
+						popGesture: 'hide'
+					},
+					waiting: {
+						autoShow: false
+					}
+      			});
+      		});
+      		//网络监测
+      		document.addEventListener("netchange",function(){
+      			if(plus.networkinfo.getCurrentType() == plus.networkinfo.CONNECTION_NONE){
+      				mui.toast('网络异常，请检查网络设置!');
+      			}/*else{
+      				mui.toast('已连接网络')
+      			}*/
+      		},false);
+      		if(plus.networkinfo.getCurrentType() == plus.networkinfo.CONNECTION_NONE || plus.networkinfo.getCurrentType() == plus.networkinfo.CONNECTION_UNKNOW){
+      			mui.toast('未连接网络，请连接！');
+      		}
+      		// 退出的逻辑
+			var backButtonPress = 0;
+			mui.back = function(event) {
+				backButtonPress++;
+				if (backButtonPress > 1) {
+					plus.runtime.quit();
+				} else {
+					plus.nativeUI.toast('再按一次退出应用');
+				}
+				setTimeout(function() {
+					backButtonPress = 0;
+				}, 1000);
+				return false;
+			};
+      	});
+    </script>
+</body>
+</html>

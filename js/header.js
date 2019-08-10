@@ -1,0 +1,1 @@
+var url = "http://140.143.242.199:8084/wealthcoin/api";

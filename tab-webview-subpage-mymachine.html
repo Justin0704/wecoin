@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title>矿机</title>
+    <script src="js/mui.min.js"></script>
+    <script type="text/javascript" src="js/header.js" ></script>
+    <script type="text/javascript" src="js/appToken.js" ></script>
+    <link href="css/mui.min.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="css/iconfont.css" />
+    <link rel="stylesheet" href="css/StyleSheet.css" />
+    <style type="text/css">
+    	/*.mui-content{margin: 12px;}*/
+    	.mui-btn{width: 95%;}
+    	.mui-bar{background-color: #108EE9;height: 65px;}
+    	.mui-row{background-color: #108EE9;}
+		.mui-title{color: #FFFFFF;line-height: 75px;}
+		.mui-table-view.mui-grid-9{
+		    background-color: #108EE9;
+		}
+		.mui-grid-view.mui-grid-9 .mui-table-view-cell{
+			border-right: 1px solid #108EE9;
+    		border-bottom: 1px solid #108EE9;
+		}
+		.mui-grid-view.mui-grid-9{
+			border-top: 1px solid #108EE9;
+    		border-left: 1px solid #108EE9;
+		}
+		.mui-grid-view.mui-grid-9 .mui-media{
+			color: #FFFFFF;
+		}
+		.mui-bar-nav {
+			box-shadow: 0 1px 6px #108EE9;
+		}
+		.mui-bar-nav~.mui-content .mui-pull-top-pocket {
+		    top: 54px;
+		}
+    </style>
+</head>
+<body>
+	<header class="mui-bar mui-bar-nav">
+		<a class="mui-icon iconfont icon-ziyuan mui-pull-right" id="myBillDetail" style="color:#FFFFFF"></a>
+		<h1 class="mui-title">矿机</h1>
+	</header>
+	<div id="pullrefresh" class="mui-content mui-scroll-wrapper">
+		<div class="mui-scroll">
+			<div class="mui-row" style="background-color: #108EE9;">
+				<ul class="mui-table-view mui-grid-view mui-grid-9">
+					<li class="mui-table-view-cell mui-media mui-col-sm-3 mui-col-xs-6">
+						<div class="mui-media-body" style="color:#FFFFFF">个人算力</div>
+						<div class="mui-media-body" style="color:#FFFFFF">(单位T)</div>
+						<h1 id="statisticsCalculate">0</h1>
+					</li>
+					<li class="mui-table-view-cell mui-media mui-col-sm-3 mui-col-xs-6">
+						<div class="mui-media-body" style="color:#FFFFFF">个人产量</div>
+						<div class="mui-media-body" style="color:#FFFFFF">(WBT/天)</div>
+						<h1 id="statisticsOutput">0.00</h1>
+					</li>
+				</ul>
+			</div>
+			<div id="mymachine" class="mui-slider-indicator mui-segmented-control mui-segmented-control-inverted">
+				<a class="mui-control-item mui-active" href="#item1">进行中</a>
+				<a class="mui-control-item" href="#item2">已停止</a>
+			</div>
+			<div id="item1" class="mui-control-content mui-active">
+			</div>
+			<div id="item2" class="mui-control-content">
+			</div>
+		</div>
+	</div>
+	<script type="text/javascript" charset="utf-8">
+      	mui.init({
+      		pullRefresh: {
+				container: '#pullrefresh',
+				down: {
+					height:50,//可选,默认50.触发下拉刷新拖动距离,
+			        auto: false,//可选,默认false.首次加载自动下拉刷新一次
+			        contentdown : "下拉可以刷新",//可选，在下拉可刷新状态时，下拉刷新控件上显示的标题内容
+			        contentover : "释放立即刷新",//可选，在释放可刷新状态时，下拉刷新控件上显示的标题内容
+			        contentrefresh : "正在刷新...",//可选，正在刷新状态时，下拉刷新控件上显示的标题内容
+					callback: pulldownRefresh
+				}/*,
+				up: {
+					contentrefresh: '正在加载...',
+					callback: pullupRefresh
+				}*/
+			}
+      	});
+      	mui.plusReady(function(){
+      		getRunningMachine();
+      		getStoppedMachine();
+      		statistics();
+      		//mui.toast("加载矿机页面");
+      		mui("#myBillDetail")[0].addEventListener('tap',function(event){
+				mui.openWindow({
+					url: 'settings/myBillDetail.html'
+				});
+			});
+      	});
+      	
+      	/**
+		 * 下拉刷新具体业务实现
+		 */
+		function pulldownRefresh() {
+			setTimeout(function() {
+				getRunningMachine();
+	      		getStoppedMachine();
+	      		statistics();
+	      		mui('#pullrefresh').pullRefresh().endPulldownToRefresh(); //refresh completed
+			}, 500);
+		}
+      	
+      	function getRunningMachine(){
+      		mui.ajax(url + '/running',{
+      			dataType:'json',//服务器返回json格式数据
+				type:'get',//HTTP请求类型
+				headers:{'Content-Type':'application/json'},
+				crossDomain:true,
+				success:function(data){
+					//服务器返回响应，根据响应结果，分析是否登录成功；
+					console.log("------------->data = " + data);
+					console.log("------------->data.resultCode = " + data.resultCode);
+					console.log("------------->data.resultMsg = " + data.resultMsg);
+					console.log("------------->data.appToken = " + data.appToken);
+					//判断本地存储的appToken是否和服务器的appToken相同
+					checkAppToken(data.appToken);
+					console.log("------------->data.runningMachines = " + data.runningMachines);
+					if(data.resultCode == '1001'){
+						//plus.ui.toast("查询正在运行矿机成功");
+						var html = "<ul class='mui-table-view mui-table-view-striped mui-table-view-condensed'>";
+						for(var i in data.runningMachines){
+							html += "<li class='mui-table-view-cell'>";
+							html += "<div class='mui-table'>";
+							html += "<div class='mui-table-cell mui-col-xs-10'>";
+							html += "<h5>机号：" + data.runningMachines[i].machineNo + "</h5>";
+							html += "<h5>状态：运行中</h5>";
+							html += "<h5>类型："+data.runningMachines[i].machineType+"</h5>";
+							html += "<h5>运行时间(天)："+data.runningMachines[i].operationDay+"</h5>";
+							html += "<h5>算力："+data.runningMachines[i].calculate+"</h5>";
+							html += "<h5>产量(WBT/天)："+data.runningMachines[i].output+"</h5>";
+							html += "</div>";
+							html += "</div>";
+							html += "</li>";
+						}
+						html += "</ul>";
+						document.getElementById("item1").innerHTML = html;
+					}else if(data.resultCode == '1004'){
+						plus.ui.toast(data.resultMsg);
+						mui.openWindow({
+							url: 'index.html',
+							id: 'index',
+							preload: true,
+							show: {
+								aniShow: 'pop-in'
+							},
+							styles: {
+								popGesture: 'hide'
+							},
+							waiting: {
+								autoShow: false
+							}
+						});
+					}
+				},
+				error:function(xhr,type,errorThrown){
+					//异常处理；
+					mui.toast("系统异常！");
+					console.log("异常: " + type);
+				}
+      		});
+      	}
+      	function getStoppedMachine(){
+      		mui.ajax(url + '/stopped',{
+      			dataType:'json',//服务器返回json格式数据
+				type:'get',//HTTP请求类型
+				headers:{'Content-Type':'application/json'},
+				crossDomain:true,
+				success:function(data){
+					//服务器返回响应，根据响应结果，分析是否登录成功；
+					console.log("------------->data = " + data);
+					console.log("------------->data.resultCode = " + data.resultCode);
+					console.log("------------->data.resultMsg = " + data.resultMsg);
+					console.log("------------->data.appToken = " + data.appToken);
+					//判断本地存储的appToken是否和服务器的appToken相同
+					checkAppToken(data.appToken);
+					console.log("------------->data.runningMachines = " + data.runningMachines);
+					if(data.resultCode == '1001'){
+						plus.ui.toast("查询已停止矿机成功");
+						var html = "<ul class='mui-table-view mui-table-view-striped mui-table-view-condensed'>";
+						for(var i in data.runningMachines){
+							html += "<li class='mui-table-view-cell'>";
+							html += "<div class='mui-table'>";
+							html += "<div class='mui-table-cell mui-col-xs-10'>";
+							html += "<h5>机号：" + data.runningMachines[i].machineNo + "</h5>";
+							html += "<h5>状态：已停止</h5>";
+							html += "<h5>类型："+data.runningMachines[i].machineType+"</h5>";
+							html += "<h5>运行时间(天)："+data.runningMachines[i].operationDay+"</h5>";
+							html += "<h5>算力："+data.runningMachines[i].calculate+"</h5>";
+							html += "<h5>产量(WBT/天)："+data.runningMachines[i].output+"</h5>";
+							html += "</div>";
+							html += "</div>";
+							html += "</li>";
+						}
+						html += "</ul>";
+						document.getElementById("item2").innerHTML = html;
+					}else if(data.resultCode == '1004'){
+							plus.ui.toast(data.resultMsg);
+							mui.openWindow({
+							url: 'index.html',
+							id: 'index',
+							preload: true,
+							show: {
+								aniShow: 'pop-in'
+							},
+							styles: {
+								popGesture: 'hide'
+							},
+							waiting: {
+								autoShow: false
+							}
+						});
+					}
+				},
+				error:function(xhr,type,errorThrown){
+					//异常处理；
+					mui.toast("系统异常！");
+					console.log("异常: " + type);
+				}
+      		});
+      	}
+      	function statistics(){
+      		mui.ajax(url + '/statistics',{
+      			dataType:'json',//服务器返回json格式数据
+				type:'get',//HTTP请求类型
+				headers:{'Content-Type':'application/json'},
+				crossDomain:true,
+				success:function(data){
+					//服务器返回响应，根据响应结果，分析是否登录成功；
+					console.log("------------->data = " + data);
+					console.log("------------->data.resultCode = " + data.resultCode);
+					console.log("------------->data.resultMsg = " + data.resultMsg);
+					console.log("------------->data.appToken = " + data.appToken);
+					//判断本地存储的appToken是否和服务器的appToken相同
+					checkAppToken(data.appToken);
+					console.log("------------->data.statistics = " + data.statistics);
+					if(data.resultCode == '1001'){
+						//plus.ui.toast("统计成功");
+						document.getElementById("statisticsCalculate").innerText = data.statistics.calculate;
+						document.getElementById("statisticsOutput").innerText = data.statistics.output;
+					}else if(data.resultCode == '1004'){
+							plus.ui.toast(data.resultMsg);
+							mui.openWindow({
+							url: 'index.html',
+							id: 'index',
+							preload: true,
+							show: {
+								aniShow: 'pop-in'
+							},
+							styles: {
+								popGesture: 'hide'
+							},
+							waiting: {
+								autoShow: false
+							}
+						});
+					}
+				},
+				error:function(xhr,type,errorThrown){
+					//异常处理；
+					mui.toast("系统异常！");
+					console.log("异常: " + type);
+				}
+      		});
+      	}
+    </script>
+</body>
+</html>

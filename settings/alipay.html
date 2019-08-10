@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title>支付宝</title>
+    <script src="../js/mui.min.js"></script>
+    <script type="text/javascript" src="../js/header.js" ></script>
+    <script type="text/javascript" src="../js/appToken2.js" ></script>
+    <link href="../css/mui.min.css" rel="stylesheet"/>
+    <style type="text/css">
+    	.area {
+				margin: 20px auto 0px auto;
+			}
+			
+			.mui-input-group {
+				margin-top: 10px;
+			}
+			
+			.mui-input-group:first-child {
+				margin-top: 20px;
+			}
+			
+			.mui-input-group label {
+				width: 22%;
+			}
+			
+			.mui-input-row label~input,
+			.mui-input-row label~select,
+			.mui-input-row label~textarea {
+				width: 78%;
+			}
+			
+			.mui-checkbox input[type=checkbox],
+			.mui-radio input[type=radio] {
+				top: 6px;
+			}
+			
+			.mui-content-padded {
+				margin-top: 25px;
+			}
+			
+			.mui-btn {
+				padding: 10px;
+			}
+			
+			.link-area {
+				display: block;
+				margin-top: 25px;
+				text-align: center;
+			}
+			
+			.spliter {
+				color: #bbb;
+				padding: 0px 8px;
+			}
+		.mui-bar{background-color: #108EE9;height: 65px;}
+			.mui-title{color: #FFFFFF;line-height: 75px;}
+			.mui-bar .mui-icon{padding-top: 25px;}
+			.mui-bar .mui-btn-link {line-height: 75px;}
+    	.mui-row{background-color: #108EE9;}
+		.mui-bar .mui-left{color: #FFFFFF;}
+		.mui-bar .mui-title{color: #FFFFFF;}
+    </style>
+</head>
+<body>
+	<header class="mui-bar mui-bar-nav">
+		<h1 class="mui-title">支付宝</h1>
+	</header>
+	<div class="mui-content" style="padding-top: 65px;">
+		<form id='login-form' class="mui-input-group">
+			<div class="mui-navbar-inner mui-bar mui-bar-nav">
+				<button type="button" class="mui-left mui-action-back mui-btn  mui-btn-link mui-btn-nav mui-pull-left">
+					<span class="mui-icon mui-icon-left-nav"></span>我的
+				</button>
+				<h1 class="mui-center mui-title">设置支付宝账号</h1>
+				<!--<button type="button" class="mui-right mui-action-back mui-btn  mui-btn-link mui-btn-nav mui-pull-right" id="mSubmit">
+					<span class="mui-icon"></span>完成
+				</button>-->
+			</div>
+			<div class="mui-input-row">
+				<input type="text" class="mui-input-clear mui-input" placeholder="请输入支付宝账号" id="alipay" value=""/>
+			</div>
+		</form>
+		<div class="mui-content-padded">
+			<button type="button" class="mui-btn mui-btn-block mui-btn-primary" id="mSubmit">提交</button>
+		</div>
+	</div>
+	<script type="text/javascript" charset="utf-8">
+      	mui.init({
+      		swipeBack:true
+      	});
+      	mui.plusReady(function(){
+      		console.log("设置支付宝账号信息");
+      		var self=plus.webview.currentWebview();//获取当前窗体对象
+			var val=self.alipay;//接收A页面传入的id参数值
+      		//document.getElementById("alipay").value = val;
+      		var jsonObj = JSON.parse(plus.storage.getItem("userInfo"));
+      		document.getElementById("alipay").value = jsonObj.alipay;
+      		
+      		updateUserInfo();
+      	});
+      	function updateUserInfo(){
+      		var alipay = document.getElementById("alipay");
+			      		
+      		var mSubmit = document.getElementById("mSubmit");
+      		mSubmit.addEventListener('tap',function(){
+      			if(alipay.value.length == 0){
+      				plus.ui.toast("请输入支付宝账号");
+      				return;
+      			}
+      			plus.nativeUI.showWaiting('正在编辑，请稍后...');
+      			mui.ajax(url + '/updateUser',{
+      				data:{
+      					"alipay":alipay.value
+      				},
+      				dataType:'json',//服务器返回json格式数据
+					type:'post',//HTTP请求类型
+					headers:{'Content-Type':'application/json'},
+					crossDomain:true,
+      				success:function(data){
+      					plus.nativeUI.closeWaiting();
+      					//判断本地存储的appToken是否和服务器的appToken相同
+						checkAppToken(data.appToken);
+      					//处理成功返回的数据
+      					if(data.resultCode == '4012'){
+	  						mui.toast(data.resultMsg);
+	  						//保存用户信息到storage
+	  						plus.storage.setItem("userInfo",data.userInfo);
+	  						//跳转到前一页
+	  						mui.back();
+	  						return;
+	  					}else if(data.resultCode = '1004'){//会话过期跳转到登陆页面
+	  						//resumeBtn(msubmit);
+	  						mui.toast(data.resultMsg);
+	  						return;
+	  					}else if(data.resultCode = '1002'){//服务器异常
+	  						//resumeBtn(msubmit);
+	  						mui.toast(data.resultMsg);
+	  						return;
+	  					}
+      				},
+      				error:function(data){
+      					plus.nativeUI.closeWaiting();
+      					mui.toast("修改出现异常！");
+      					//resumeBtn(msubmit);
+	  					console.log("异常" + type);
+      				}
+      			});
+      		});
+      	}
+    </script>
+</body>
+</html>

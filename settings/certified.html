@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title>实名认证</title>
+    <script src="../js/mui.min.js"></script>
+    <script type="text/javascript" src="../js/header.js" ></script>
+    <script type="text/javascript" src="../js/sms.js" ></script>
+    <script type="text/javascript" src="../js/appToken2.js" ></script>
+    <link href="../css/mui.min.css" rel="stylesheet"/>
+    <link href="../css/StyleSheet.css" rel="stylesheet" />
+	<link href="../css/reg.css" rel="stylesheet" />
+    <style type="text/css">
+    	.area {
+				margin: 20px auto 0px auto;
+			}
+			
+			.mui-input-group {
+				margin-top: 10px;
+			}
+			
+			.mui-input-group:first-child {
+				margin-top: 20px;
+			}
+			
+			.mui-input-group label {
+				width: 22%;
+			}
+			
+			.mui-input-row label~input,
+			.mui-input-row label~select,
+			.mui-input-row label~textarea {
+				width: 78%;
+			}
+			
+			.mui-checkbox input[type=checkbox],
+			.mui-radio input[type=radio] {
+				top: 6px;
+			}
+			
+			.mui-content-padded {
+				margin-top: 25px;
+			}
+			
+			.mui-btn {
+				padding: 10px;
+			}
+			
+			.link-area {
+				display: block;
+				margin-top: 25px;
+				text-align: center;
+			}
+			
+			.spliter {
+				color: #bbb;
+				padding: 0px 8px;
+			}
+		.mui-bar{background-color: #108EE9;height: 65px;}
+			.mui-title{color: #FFFFFF;line-height: 75px;}
+			.mui-bar .mui-icon{padding-top: 25px;}
+			.mui-bar .mui-btn-link {line-height: 75px;}
+    	.mui-row{background-color: #108EE9;}
+		.mui-bar .mui-action-back{color: #FFFFFF;}
+		.mui-bar .mui-title{color: #FFFFFF;}
+    </style>
+</head>
+<body>
+	<header class="mui-bar mui-bar-nav">
+		<h1 class="mui-title">实名认证</h1>
+	</header>
+	<div class="mui-content">
+		<form id='login-form' class="mui-input-group">
+			<div class="mui-navbar-inner mui-bar mui-bar-nav">
+				<button type="button" class="mui-left mui-action-back mui-btn  mui-btn-link mui-btn-nav mui-pull-left">
+					<span class="mui-icon mui-icon-left-nav"></span>
+				</button>
+				<h1 class="mui-center mui-title">实名认证</h1>
+				<!--<button type="button" class="mui-right mui-action-back mui-btn  mui-btn-link mui-btn-nav mui-pull-right">
+					<span class="mui-icon"></span>完成
+				</button>-->
+			</div>
+			<ul class="mui-table-view mui-table-view-chevron">
+				<li class="mui-table-view-cell">
+					请绑定持卡人本人的银行卡
+					<h5 style="color: red;">请输入正确的姓名和银行卡号，以便收到款项。</h5>
+				</li>
+			</ul>
+			<div class="mui-input-row">
+				<input type="text" class="mui-input-clear mui-input" placeholder="请输入开户行姓名（例如：张三）" id="accountName" value=""/>
+			</div>
+			<div class="mui-input-row">
+				<input type="text" class="mui-input-clear mui-input" placeholder="请输入身份证号" id="idCard" value=""/>
+			</div>
+			<div class="mui-input-row">
+				<input type="text" class="mui-input-clear mui-input" placeholder="请输入银行卡号" id="bankCardNumber" value=""/>
+			</div>
+			<div class="mui-input-row">
+				<input type="text" class="mui-input-clear mui-input" placeholder="请输入开户银行（例如：工商银行）" id="accountBank" value=""/>
+			</div>
+			<ul class="mui-table-view mui-table-view-chevron">
+				<li class="mui-table-view-cell">
+					银行预留手机号验证
+				</li>
+			</ul>
+			<div class="mui-input-row">
+				<input type="tel" class="mui-input-clear mui-input" placeholder="请输入银行预留手机号" id="bankMobileNo" value=""/>
+			</div>
+			<div class="mui-input-row">
+				<input type="text" class="mui-input" style="width: 150px;" placeholder="输入图片验证码" id="imageCode" />
+				<img src="http://140.143.242.199:8084/wealthcoin/api/getImageCode" class="mui-btn mui-btn-outlined" onclick="myReload()" id="imageMask">
+			</div>
+			<div class="mui-input-row">
+				<input type="text" class="mui-input-clear mui-input" style="width: 150px;" placeholder="输入短信验证码" id="smsCode"/>
+				<button type="button" id="btnSendSMS" class="mui-btn mui-btn-outlined">发送短信</button>
+			</div>
+		</form>
+		<div class="mui-content-padded">
+			<button type="button" class="mui-btn mui-btn-block mui-btn-primary" id="mSubmit">提交</button>
+		</div>
+	</div>
+	<script type="text/javascript" charset="utf-8">
+      	mui.init({
+      		swipeBack:true
+      	});
+      	mui.plusReady(function(){
+      		initBankInfo();
+      		addCount();
+      	});
+      	function initBankInfo(){
+      		console.log("@@@@@----------->userInfo = " + plus.storage.getItem("userInfo"));
+      		var jsonObj = JSON.parse(plus.storage.getItem("userInfo"));
+      		document.getElementById("accountName").value = jsonObj.accountName;
+      		document.getElementById("idCard").value = jsonObj.idCard;
+      		document.getElementById("bankCardNumber").value = jsonObj.bankCardNumber;
+      		document.getElementById("accountBank").value = jsonObj.accountBank;
+      		document.getElementById("bankMobileNo").value = jsonObj.bankMobileNo;
+      	}
+      	//添加银行卡信息
+      	function addCount(){
+      		console.log("添加银行卡信息");
+      		var accountName = document.getElementById("accountName");
+      		var idCard = document.getElementById("idCard");
+      		var bankCardNumber = document.getElementById("bankCardNumber");
+      		var accountBank = document.getElementById("accountBank");
+      		var bankMobileNo = document.getElementById("bankMobileNo");
+      		var imageCode = document.getElementById("imageCode");
+      		var smsCode = document.getElementById("smsCode");
+      		
+      		var mSubmit = document.getElementById("mSubmit");
+      		mSubmit.addEventListener('tap',function(){
+      			if(accountName.value.length == 0){
+      				plus.ui.toast("请输入开户行姓名");
+      				return;
+      			}
+      			if(idCard.value.length == 0){
+      				plus.ui.toast("请输入身份证号码");
+      				return;
+      			}
+      			if(bankCardNumber.value.length == 0){
+      				plus.ui.toast("请输入银行卡号");
+      				return;
+      			}
+      			if(accountBank.value.length == 0){
+      				plus.ui.toast("请输入开户行");
+      				return;
+      			}
+      			if(bankMobileNo.value.length == 0){
+      				plus.ui.toast("请输入银行预留手机号码");
+      				return;
+      			}
+      			if(imageCode.value.length == 0){
+      				plus.ui.toast("请输入图片验证码");
+      				return;
+      			}
+      			if(smsCode.value.length == 0){
+      				plus.ui.toast("请输入短信验证码");
+      				return;
+      			}
+      			plus.nativeUI.showWaiting('正在编辑，请稍后...');
+      			mui.ajax(url + '/updateUser',{
+      				data:{
+      					"accountName":accountName.value,
+      					"idCard":idCard.value,
+      					"bankCardNumber":bankCardNumber.value,
+      					"accountBank":accountBank.value,
+      					"bankMobileNo":bankMobileNo.value,
+      					"imageCode":imageCode.value,
+      					"smsCode":smsCode.value
+      				},
+      				dataType:'json',//服务器返回json格式数据
+					type:'post',//HTTP请求类型
+					headers:{'Content-Type':'application/json'},
+					crossDomain:true,
+      				success:function(data){
+      					plus.nativeUI.closeWaiting();
+      					checkAppToken(data.appToken);
+      					//处理成功返回的数据
+      					if(data.resultCode == '4012'){
+	  						mui.toast(data.resultMsg);
+	  						plus.storage.setItem("userInfo",data.userInfo);
+	  						//跳转到前一页
+	  						mui.back();
+	  						return;
+	  					}else if(data.resultCode = '1004'){//会话过期跳转到登陆页面
+	  						mui.toast(data.resultMsg);
+	  						return;
+	  					}else if(data.resultCode = '1002'){//服务器异常
+	  						mui.toast(data.resultMsg);
+	  						return;
+	  					}else{
+	  						mui.toast(data.resultMsg);
+	  						return;
+	  					}
+      				},
+      				error:function(data){
+      					plus.nativeUI.closeWaiting();
+      					mui.toast("修改出现异常！");
+	  					console.log("异常" + type);
+      				}
+      			});
+      		});
+      		btnSendSMS.addEventListener('tap',function(){
+      			var bankMobileNo = document.getElementById("bankMobileNo");
+      			var imageCode = document.getElementById("imageCode");
+      			if(bankMobileNo.value == ''){
+      				mui.toast("请输入银行预留手机号");
+      				return;
+      			}
+      			if(imageCode.value == ''){
+      				mui.toast("请输入图片验证码");
+      				return;
+      			}
+      			var regex4='^1(3[0-9]|4[57]|5[0-35-9]|8[0-9]|70)\\d{8}$';//手机
+	      		var telephone = new RegExp(regex4);
+	      		//var pwd = new RegExp(regex2);
+	      		if(!telephone.test(bankMobileNo.value)){
+	      			mui.toast("您输入的手机号有错误！");
+	      			return false;
+	      		}
+	    		settime();
+	    		console.log("----------->银行预留手机号 = " + bankMobileNo.value);
+	    		sendSmsCode(bankMobileNo.value,imageCode.value);
+	    	});
+      	}
+      	//倒计时
+        var countdown=120;
+        function settime() { //发送验证码倒计时
+        	var code = document.getElementById("btnSendSMS");
+            if (countdown == 0) {
+            	code.innerText = "发送短信";
+            	code.removeAttribute("disabled");
+                countdown = 120;
+                return;
+            } else {
+            	code.setAttribute("disabled", true);
+            	code.innerText = countdown + "s后重新发送";
+                countdown--;
+            }
+            setTimeout(function() {
+                    settime()
+                }, 1000);
+        }
+        //用于刷新验证码
+	    function myReload() {
+	        document.getElementById("imageMask").src = document.getElementById("imageMask").src + "?nocache=" + new Date().getTime();
+	    }
+    </script>
+</body>
+</html>

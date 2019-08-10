@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title>忘记密码</title>
+    <script src="js/mui.min.js"></script>
+    <script type="text/javascript" src="js/header.js" ></script>
+    <script type="text/javascript" src="js/sms.js" ></script>
+    <link href="css/mui.min.css" rel="stylesheet"/>
+    <link href="css/StyleSheet.css" rel="stylesheet" />
+	<link href="css/reg.css" rel="stylesheet" />
+    <style type="text/css">
+    	.area {
+				margin: 20px auto 0px auto;
+			}
+			.mui-input-group:first-child {
+				margin-top: 20px;
+			}
+			.mui-input-group label {
+				width: 22%;
+			}
+			.mui-input-row label~input,
+			.mui-input-row label~select,
+			.mui-input-row label~textarea {
+				width: 78%;
+			}
+			.mui-checkbox input[type=checkbox],
+			.mui-radio input[type=radio] {
+				top: 6px;
+			}
+			.mui-content-padded {
+				margin-top: 25px;
+			}
+			.mui-btn {
+				padding: 10px;
+			}
+			.mui-input-row label~input, .mui-input-row label~select, .mui-input-row label~textarea{
+				margin-top: 1px;
+			}
+			/*body {
+			    background: url(img/background6.jpg) no-repeat fixed center center/100% 100%;
+			}
+			body, html {
+			    overflow-x: hidden;
+			}
+			html, body {
+			    height: 100%;
+			}*/
+			.mui-bar a{color:#FFFFFF}
+			.mui-bar{background-color: #108EE9;height: 65px;}
+			.mui-title{color: #FFFFFF;line-height: 75px;}
+    </style>
+</head>
+<body>
+	<header class="mui-bar mui-bar-nav">
+		<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+		<h1 class="mui-title">忘记密码</h1>
+	</header>
+	<div class="mui-content">
+		<form class="mui-input-group" style="opacity:0.7;border-radius:15px 15px 15px 15px;">
+			<div class="mui-input-row">
+				<input type="text" class="mui-input-clear mui-input" placeholder="请输入您的手机号" id="mobile"/>
+			</div>
+			<div class="mui-input-row">
+				<input type="text" class="mui-input" style="width: 150px;" placeholder="请输入图片验证码" id="imageCode" />
+				<img src="http://140.143.242.199:8084/wealthcoin/api/getImageCode" class="mui-btn mui-btn-outlined" onclick="myReload()" id="imageMask">
+			</div>
+			<div class="mui-input-row">
+				<input type="text" class="mui-input"  style="width: 150px;"  placeholder="请输入短信验证码" id="smsCode"/>
+				<button type="button" class="mui-btn mui-btn-outlined" id="sendSms">获取验证码</button>
+			</div>
+			<div class="mui-input-row">
+				<input type="password" class="mui-input-password" placeholder="请输入您的新密码" id="pwd" />
+			</div>
+			<div class="mui-input-row">
+				<input type="password" class="mui-input-password" placeholder="请重复输入您的新密码" id="repwd" />
+			</div>
+		</form>
+		<div class="mui-content-padded" align="center" style="border-radius:15px 15px 15px 15px;">
+			<button type="button" class="mui-btn mui-btn-block mui-btn-primary" id="msubmit">提交</button>
+		</div>
+	</div>
+	<script type="text/javascript" charset="utf-8">
+      	mui.init();
+      	mui.plusReady(function(){
+      		//加载图片
+      		//复原获取验证码按钮
+      		document.getElementById("sendSms").removeAttribute("disabled");
+      		document.getElementById("sendSms").innerHTML = "获取验证码";
+      		forgetPassword();
+      	});
+      	function forgetPassword(){
+      		var mobile = document.getElementById("mobile");
+      		var imageCode = document.getElementById("imageCode");
+      		var smsCode = document.getElementById("smsCode");
+      		var mpassword = document.getElementById("pwd");
+      		var repassword = document.getElementById("repwd");
+      		var msubmit = document.getElementById("msubmit");
+      		
+      		msubmit.addEventListener('tap',function(){
+      			if(mobile.value.length == 0){
+      				plus.ui.toast("请输入手机号码");
+      				return;
+      			}
+      			/*if(smsCode.value.length == 0){
+      				plus.ui.toast("短信验证码不能为空");
+      				return;
+      			}*/
+      			if(imageCode.value.length == 0){
+      				plus.ui.toast("图片验证码不能为空");
+      				return;
+      			}
+      			if(mpassword.value.length == 0 && mpassword.value.length < 6){
+      				plus.ui.toast("密码不能为空，并且长度不能小于6");
+      				return;
+      			}
+      			if(repassword.value.length == 0){
+      				plus.ui.toast("重复密码不能为空");
+      				return;
+      			}
+      			if(mpassword.value != repassword.value){
+      				plus.ui.toast("两次密码输入的不一致");
+      				return;
+      			}
+      			var regex1 = "^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{6,12}$";   //密码6-12位的字母数字组合
+	      		var regex2="^[A-Za-z0-9]+{6,12}$";  //字母或数字
+	      		var regex3='^[\u4E00-\u9FA5A-Za-z0-9]+$';  //帐号中文数字字母
+	      		var regex4='^1(3[0-9]|4[57]|5[0-35-9]|8[0-9]|70)\\d{8}$';//手机
+	      		var telephone = new RegExp(regex4);
+	      		if(!telephone.test(mobile.value)){
+	      			mui.toast("您输入的手机号有错误！");
+	      			return;
+	      		}
+	      		//suspendBtn(msubmit);
+	      		plus.nativeUI.showWaiting('正在修改，请稍后...');
+      			mui.ajax(url + '/forgetPwd',{
+      				data:{
+      					"mobileNo":mobile.value,
+      					"smsCode":smsCode.value,
+      					"imageCode":imageCode.value,
+      					"passwd":mpassword.value
+      				},
+      				dataType:'json',//服务器返回json格式数据
+					type:'post',//HTTP请求类型
+					headers:{'Content-Type':'application/json'},
+					crossDomain:true,
+      				success:function(data){
+      					plus.nativeUI.closeWaiting();
+      					//处理成功返回的数据
+      					if(data.resultCode == '1001'){
+	  						mui.toast("修改密码成功");
+	  						//resumeBtn(msubmit);
+	  						document.getElementById("mobile").value = "";
+				      		document.getElementById("smsCode").value = "";
+				      		document.getElementById("imageCode").value = "";
+				      		document.getElementById("pwd").value = "";
+				      		document.getElementById("repwd").value = "";
+	  						mui.openWindow({
+  								url:'index.html',
+  								id:'index',
+  								show:{
+  									aniShow: 'pop-in'
+  								}
+  							});
+	  						return;
+	  					}else if(data.resultCode = '4009'){
+	  						//resumeBtn(msubmit);
+	  						mui.toast(data.resultMsg);
+	  						return;
+	  					}
+      				},
+      				error:function(data){
+      					mui.toast("修改出现异常！");
+      					//resumeBtn(msubmit);
+	  					console.log("异常" + type);
+      				}
+      			});
+      		});
+      		sendSms.addEventListener('tap',function(){
+      			if(mobile.value == ''){
+      				mui.toast("请输入手机号码");
+      				return;
+      			}
+      			if(imageCode.value == ''){
+      				mui.toast("请输入图片验证码");
+      				return;
+      			}
+      			var regex4='^1(3[0-9]|4[57]|5[0-35-9]|8[0-9]|70)\\d{8}$';//手机
+	      		var telephone = new RegExp(regex4);
+	      		//var pwd = new RegExp(regex2);
+	      		if(!telephone.test(document.getElementById("mobile").value)){
+	      			mui.toast("您输入的手机号有错误！");
+	      			return false;
+	      		}
+	    		settime();
+	    		console.log("----------->用户忘记密码点击获取验证码的手机号码 = " + mobile.value);
+	    		sendSmsCode(mobile.value,imageCode.value);
+	    	});
+      	}
+      	//倒计时
+        var countdown=120;
+        function settime() { //发送验证码倒计时
+        	var code = document.getElementById("sendSms");
+            if (countdown == 0) {
+            	code.innerText = "获取验证码";
+            	code.removeAttribute("disabled");
+                //code.attr('disabled',false).attr("value", "获取验证码");
+                countdown = 120;
+                return;
+            } else {
+            	code.setAttribute("disabled", true);
+            	code.innerText = countdown + "s后重新发送";
+                //code.attr('disabled',true).attr("value", "重新发送(" + countdown + ")");
+                countdown--;
+            }
+            setTimeout(function() {
+                    settime()
+                }, 1000);
+        }
+      	function suspendBtn(btn){
+      		btn.disabled = "disabled";
+      		btn.innerText = "正在修改";
+      	}
+      	function resumeBtn(btn){
+      		btn.disabled = "";
+      		btn.innerText = "提交";
+      	}
+      	//用于刷新验证码
+	    function myReload() {
+	        document.getElementById("imageMask").src = document.getElementById("imageMask").src + "?nocache=" + new Date().getTime();
+	    }
+    </script>
+</body>
+</html>

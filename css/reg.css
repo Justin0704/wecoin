@@ -1,0 +1,13 @@
+.mui-input-group label {width: 26%;padding-top:14px;padding-bottom:14px;text-align:left;}
+
+.mui-input-row label~input,
+.mui-input-row label~select,
+.mui-input-row label~textarea {width: 74%;}
+
+.mui-input-row .mui-input-clear ~ .mui-icon-clear,
+.mui-input-row .mui-input-password ~ .mui-icon-eye {right: 15px; }
+.mui-input-row .mui-input-password ~ .mui-icon-eye{font-size: 22px;top: 12px;}
+
+.mui-input-row label~#VerificationCode{width: 48%;box-sizing: border-box;}
+.mui-input-row .mui-btn{width: 28%;box-sizing: border-box;right: 15px;padding: 5px 1px;}
+.mui-btn-outlined {margin-top: 6px;color: #00B4FF;border: 1px solid #00B4FF; }

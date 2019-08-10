@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title>进阶挂单</title>
+    <script type="text/javascript" src="../js/mui.min.js" ></script>
+    <script type="text/javascript" src="../js/header.js" ></script>
+    <script type="text/javascript" src="../js/appToken2.js" ></script>
+    <script type="text/javascript" src="../js/newhand.js" ></script>
+    <link href="../css/mui.min.css" rel="stylesheet"/>
+    <style type="text/css">
+    	/*.mui-content{margin: 12px;}
+    	.mui-btn{width: 95%;}*/
+    	#div {  
+            width: 0px;  
+            height: 0px;  
+            background: red;  
+            position: fixed;  
+            top: 70%;  
+            left: 50%;  
+        }
+        /*移除底部或顶部三角,需要在删除此代码*/  
+        .mui-popover .mui-popover-arrow:after {  
+            width: 0px;  
+        }
+        .mui-bar{background-color: #108EE9;height: 65px;}
+			.mui-title{color: #FFFFFF;line-height: 75px;}
+			.mui-bar .mui-icon{padding-top: 25px;}
+			.mui-bar .mui-btn-link {line-height: 75px;}
+    	.mui-row{background-color: #108EE9;}
+		.mui-bar .mui-left{color: #FFFFFF;}
+		.mui-bar .mui-title{color: #FFFFFF;}
+		.mui-scroll-wrapper {
+			top: 15px;
+		}
+    </style>
+</head>
+<body>
+	<header class="mui-bar mui-bar-nav">
+		<button type="button" class="mui-left mui-action-back mui-btn  mui-btn-link mui-btn-nav mui-pull-left">
+			<span class="mui-icon mui-icon-left-nav"></span>矿市
+		</button>
+		<h1 class="mui-center mui-title">进阶挂单</h1>
+	</header>
+	<div id="pullrefresh" class="mui-content mui-scroll-wrapper">
+		<div class="mui-scroll">
+			<form id='login-form' class="mui-input-group">
+				<h4 class="mui-content-padded" align="center">算力>=5用户可进行10-200WBT议价交易！</h4>
+				<h5 style='margin-top:15px;'></h5>
+				<div class="mui-input-row" style="height: 100%;width: 100%;">
+					<h5 class="mui-content-padded" align="center">当前价：<span id="currentPrice">0.00</span>CNY</h5>
+					<div class="mui-content-padded" align="center">
+						<div class="mui-numbox" style="width: 95%;height: 50px;">
+							<button class="mui-btn-numbox-minus" type="button">-</button>
+							<input class="mui-input-numbox" type="number" value="0.00" id="box"/>
+							<button class="mui-btn-numbox-plus" type="button">+</button>
+						</div>
+					</div>
+				</div>
+				<h5 style='margin-top:25px;'></h5>
+				<div class="mui-input-row mui-input-range field-contain">
+					<div style="margin-left:35px;">
+		                <input type="range" id='sellAmount-field-range' value="10" min="10" max="200" />
+		            </div>
+				</div>
+				<div class="mui-input-row" align="center">
+					<!--<h6 style='font-size: x-large;font-family: '微软雅黑';font-weight: 200;' id="sellAmount">10</h6>-->
+					<input type="text" id="sellAmount" value="10" style="text-align: center;"/>
+				</div>
+				<h5 class="mui-content-padded" align="center">买入<span id="wbtCount">10</span>WBT，出价<span id="unitPrice">0.00</span>元，总价<span id="totalPrice">0.00</span>元</h5>
+				<div class="mui-content-padded">
+					<button type="button" class="mui-btn mui-btn-yellow" id="hangingOrder" style="width:95%;">挂买单</button>
+				</div>
+				<h5 class="mui-content-padded" align="center" id="getStarted">新手挂单交易须知？</h5>
+				<h5 style='margin-top:25px;'></h5>
+				<div id="mymachine" class="mui-slider-indicator mui-segmented-control mui-segmented-control-inverted">
+					<a class="mui-control-item mui-active" href="#item1" id="allPendingOrders">买家看板</a>
+					<a class="mui-control-item" href="#item2" id="dealOrders">交易信箱</a>
+				</div>
+				<div class="mui-control-content mui-active" id="item1">
+					<div id="pendingOrders">
+						
+					</div>
+				</div>
+				<div class="mui-control-content" id="item2">
+					<div id="myPendingMessages">
+						<h5 align="center">交易信箱</h5>
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+	<div id="div"></div>
+	<div id="popover_newhand" class="mui-popover">
+	</div>
+	<script type="text/javascript" charset="utf-8">
+      	mui.init({
+      		swipeBack:true,
+      		pullRefresh: {
+				container: '#pullrefresh',
+				down: {
+					height:50,//可选,默认50.触发下拉刷新拖动距离,
+			        auto: false,//可选,默认false.首次加载自动下拉刷新一次
+			        contentdown : "下拉可以刷新",//可选，在下拉可刷新状态时，下拉刷新控件上显示的标题内容
+			        contentover : "释放立即刷新",//可选，在释放可刷新状态时，下拉刷新控件上显示的标题内容
+			        contentrefresh : "正在刷新...",//可选，正在刷新状态时，下拉刷新控件上显示的标题内容
+					callback: pulldownRefresh
+				}/*,
+				up: {
+					contentrefresh: '正在加载...',
+					callback: pullupRefresh
+				}*/
+			}
+      	});
+      	/**
+		 * 下拉刷新具体业务实现
+		 */
+		function pulldownRefresh() {
+			setTimeout(function() {
+				//mui.toast("新手挂单");
+	      		showNewPrice()
+	      		//显示买家看板信息
+	      		showPendingOrders();
+				mui('#pullrefresh').pullRefresh().endPulldownToRefresh(); //refresh completed
+			}, 500);
+		}
+      	mui.plusReady(function(){
+      		//mui.toast("新手挂单");
+      		showNewPrice()
+      		//显示买家看板信息
+      		showPendingOrders();
+      		
+      		var allPendingOrders = document.getElementById("allPendingOrders");
+			allPendingOrders.addEventListener('tap',function(){
+				//plus.ui.toast("买家看板");
+				showPendingOrders();
+			});
+      		
+      		var hangingOrder = document.getElementById("hangingOrder");
+      		hangingOrder.addEventListener('tap',function(){
+      			var wbt = document.getElementById("wbtCount").innerText;
+      			var unitP = document.getElementById("unitPrice").innerText;
+      			var total = document.getElementById("totalPrice").innerText;
+      			var pendingType = 2;//进阶挂单
+      			console.log("wbt = " + wbt + " ,unitP = " + unitP + " ,total = " + total + "pendingType = " + pendingType);
+      			checkEnoughWbt(wbt,unitP,total,pendingType);
+      		});
+      		dealOrders.addEventListener('tap',function(){
+				//plus.ui.toast("交易信箱");
+				showMyDealOrders();
+			});
+      	});
+      	var box = document.getElementById("box");
+      	var sellAmount = document.getElementById("sellAmount");
+      	sellAmount.addEventListener('input',function(){
+      		document.getElementById("sellAmount-field-range").value = this.value;
+      		//判断输入框的值<=10，则返回10
+      		if(this.value <= 0){
+      			this.value = 10;
+      		}
+      		//判断输入框的值大于200，则返回200
+      		if(this.value > 200){
+      			this.value = 200;
+      		}
+      		//计算总价格
+      		document.getElementById("wbtCount").innerText = this.value;
+      		document.getElementById("totalPrice").innerText = (this.value * box.value).toFixed(2);
+      	});
+      	var rangeList = document.querySelectorAll('input[type="range"]');
+      	for(var i = 0;i<rangeList.length;i++){
+      		rangeList[i].addEventListener('input',function(){
+      			if(this.id.indexOf('field') >=0){
+      				document.getElementById("sellAmount").value = this.value;
+      				document.getElementById("wbtCount").innerText = this.value;
+      				document.getElementById("totalPrice").innerText = (this.value * box.value).toFixed(2);
+      			}
+      		});
+      	}
+      	box.addEventListener('change',function(){
+      		//console.log("before : this.value = " + this.value);
+      		this.value = (this.value * 1).toFixed(2);
+      		//console.log("after : this.value = " + this.value);
+      		if(this.value < 0){
+      			this.value = 0;
+      		}
+      		document.getElementById("unitPrice").innerText = box.value;
+      		document.getElementById("totalPrice").innerText = (box.value * sellAmount.value).toFixed(2);
+      	});
+      	
+
+		//获取最新价格
+		function showNewPrice(){
+			mui.ajax(url + '/queryNewPrice',{
+				dataType:'json',//服务器返回json格式数据
+				type:'get',//HTTP请求类型
+				headers:{'Content-Type':'application/json'},
+				crossDomain:true,
+				success:function(data){
+					//服务器返回响应，根据响应结果，分析是否登录成功；
+					console.log("------------->获取最新价格data = " + data);
+					console.log("------------->获取最新价格data.resultCode = " + data.resultCode);
+					console.log("------------->获取最新价格data.resultMsg = " + data.resultMsg);
+					checkAppToken(data.appToken);
+					
+					if(data.resultCode == '1001'){
+						console.log("wbtPrice = " + data.wbtPrice.wbtPrice);
+						document.getElementById("currentPrice").innerText = data.wbtPrice.wbtPrice;
+						document.getElementById("box").value = data.wbtPrice.wbtPrice;
+						document.getElementById("unitPrice").innerText = data.wbtPrice.wbtPrice;
+						document.getElementById("totalPrice").innerText = (data.wbtPrice.wbtPrice * sellAmount.value).toFixed(2);
+					}else if(data.resultCode == '1002'){
+						mui.toast(data.resultMsg);
+					}else if(data.resultCode == '1004'){
+						mui.toast(data.resultMsg);
+					}
+				},
+				error:function(xhr,type,errorThrown){
+					//异常处理；
+					mui.toast("获取最新价格时系统异常！");
+					console.log("异常: " + type);
+				}
+			});
+		}
+		document.getElementById("getStarted").addEventListener('tap',function(){
+      		mui.openWindow({
+      			url: '../settings/getStarted.html'
+      		});
+      	});
+    </script>
+</body>
+</html>

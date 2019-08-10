@@ -1,0 +1,177 @@
+{
+  "market.html": {
+    "href": "market.html",
+    "resources": [
+      "js/mui.min.js",
+      "css/mui.min.css",
+      "js/echarts-all.js"
+    ],
+    "refer": [],
+    "priority": 0
+  },
+  "minepool.html": {
+    "href": "minepool.html",
+    "resources": [
+      "js/mui.min.js",
+      "css/mui.min.css"
+    ],
+    "refer": [],
+    "priority": 0
+  },
+  "mymachine.html": {
+    "href": "mymachine.html",
+    "resources": [
+      "js/mui.min.js",
+      "css/mui.min.css"
+    ],
+    "refer": [],
+    "priority": 0
+  },
+  "settings/mybill.html": {
+    "href": "settings/mybill.html",
+    "resources": [
+      "css/mui.min.css",
+      "css/app.css",
+      "js/mui.min.js"
+    ],
+    "refer": [],
+    "priority": 0
+  },
+  "settings/service.html": {
+    "href": "settings/service.html",
+    "resources": [
+      "js/mui.min.js",
+      "css/mui.min.css"
+    ],
+    "refer": [],
+    "priority": 0
+  },
+  "settings/hongbao.html": {
+    "href": "settings/hongbao.html",
+    "resources": [
+      "js/mui.min.js",
+      "css/mui.min.css"
+    ],
+    "refer": [],
+    "priority": 0
+  },
+  "settings/weixin.html": {
+    "href": "settings/weixin.html",
+    "resources": [
+      "js/mui.min.js",
+      "css/mui.min.css"
+    ],
+    "refer": [],
+    "priority": 0
+  },
+  "settings/alipay.html": {
+    "href": "settings/alipay.html",
+    "resources": [
+      "js/mui.min.js",
+      "css/mui.min.css"
+    ],
+    "refer": [],
+    "priority": 0
+  },
+  "settings/virtualwallet.html": {
+    "href": "settings/virtualwallet.html",
+    "resources": [
+      "js/mui.min.js",
+      "css/mui.min.css"
+    ],
+    "refer": [],
+    "priority": 0
+  },
+  "settings/loginpwd.html": {
+    "href": "settings/loginpwd.html",
+    "resources": [
+      "js/mui.min.js",
+      "css/mui.min.css"
+    ],
+    "refer": [],
+    "priority": 0
+  },
+  "settings/dealpwd.html": {
+    "href": "settings/dealpwd.html",
+    "resources": [
+      "js/mui.min.js",
+      "css/mui.min.css"
+    ],
+    "refer": [],
+    "priority": 0
+  },
+  "setting.html": {
+    "href": "setting.html",
+    "resources": [
+      "js/mui.min.js",
+      "css/mui.min.css"
+    ],
+    "refer": [
+      "settings/mybill.html",
+      "settings/service.html",
+      "settings/hongbao.html",
+      "settings/weixin.html",
+      "settings/alipay.html",
+      "settings/virtualwallet.html",
+      "settings/loginpwd.html",
+      "settings/dealpwd.html",
+      "index.html"
+    ],
+    "priority": 0
+  },
+  "machines.html": {
+    "href": "machines.html",
+    "resources": [
+      "js/mui.min.js",
+      "css/mui.min.css"
+    ],
+    "refer": [],
+    "priority": 0
+  },
+  "machineList.html": {
+    "href": "machineList.html",
+    "resources": [
+      "js/mui.min.js",
+      "css/mui.min.css"
+    ],
+    "refer": [
+      "market.html",
+      "minepool.html",
+      "mymachine.html",
+      "setting.html",
+      "machines.html"
+    ],
+    "priority": 0
+  },
+  "forgetPwd.html": {
+    "href": "forgetPwd.html",
+    "resources": [
+      "js/mui.min.js",
+      "css/mui.min.css"
+    ],
+    "refer": [],
+    "priority": 0
+  },
+  "register.html": {
+    "href": "register.html",
+    "resources": [
+      "js/mui.min.js",
+      "css/mui.min.css"
+    ],
+    "refer": [],
+    "priority": 0
+  },
+  "index.html": {
+    "href": "index.html",
+    "resources": [
+      "js/mui.min.js",
+      "css/mui.min.css"
+    ],
+    "refer": [
+      "machineList.html",
+      "forgetPwd.html",
+      "register.html"
+    ],
+    "priority": 0
+  }
+}

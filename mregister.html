@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title>注册</title>
+    <script src="js/mui.min.js"></script>
+    <script type="text/javascript" src="js/header.js" ></script>
+    <script type="text/javascript" src="js/sms.js" ></script>
+    <link href="css/mui.min.css" rel="stylesheet"/>
+    <link href="css/StyleSheet.css" rel="stylesheet" />
+	<link href="css/reg.css" rel="stylesheet" />
+    <style type="text/css">
+    	.area {
+				margin: 20px auto 0px auto;
+			}
+			.mui-input-group:first-child {
+				margin-top: 20px;
+			}
+			.mui-input-group label {
+				width: 22%;
+			}
+			.mui-input-row label~input,
+			.mui-input-row label~select,
+			.mui-input-row label~textarea {
+				width: 78%;
+			}
+			.mui-checkbox input[type=checkbox],
+			.mui-radio input[type=radio] {
+				top: 6px;
+			}
+			.mui-content-padded {
+				margin-top: 25px;
+			}
+			.mui-btn {
+				padding: 10px;
+			}
+			body {
+			    /*background: url(img/background6.jpg) no-repeat fixed center center/100% 100%;*/
+			}
+			body, html {
+			    overflow-x: hidden;
+			}
+			html, body {
+			    height: 100%;
+			}
+			/*.mui-bar,.mui-content{background-color: transparent;margin: 12px;}*/
+			.mui-bar{background-color: #108EE9;height: 65px;}
+			.mui-title{color: #FFFFFF;line-height: 75px;}
+			.mui-bar a{color:#FFFFFF}
+			.mui-title{color: #FFFFFF;}
+    </style>
+</head>
+<body>
+	<header class="mui-bar mui-bar-nav">
+		<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+		<h1 class="mui-title">创建账户</h1>
+	</header>
+	<div class="mui-content">
+		<form class="mui-input-group">
+			<!--<ul class="mui-table-view">
+				<li class="mui-table-view-cell">
+					<input type="text" class="mui-input-clear mui-input" placeholder="请输入短信验证码" id="smsCode"/>
+					<button type="button" id="btnVerificationCode" class="mui-btn mui-btn-outlined">获取验证码</button>
+				</li>
+			</ul>-->
+			<div class="mui-input-row">
+				<input type="text" class="mui-input-clear mui-input" placeholder="请输入手机号码" id="mobile"/>
+			</div>
+			<div class="mui-input-row">
+				<input type="text" class="mui-input" style="width: 150px;" placeholder="输入图片验证码" id="imageCode" />
+				<img src="http://140.143.242.199:8084/wealthcoin/api/getImageCode" class="mui-btn mui-btn-outlined" onclick="myReload()" id="imageMask">
+			</div>
+			<div class="mui-input-row">
+				<input type="text" class="mui-input-clear mui-input" style="width: 150px;" placeholder="输入短信验证码" id="smsCode"/>
+				<button type="button" id="btnVerificationCode" class="mui-btn mui-btn-outlined">获取验证码</button>
+			</div>
+			<div class="mui-input-row mui-password">
+				<input type="password" class="mui-input-password" placeholder="创建密码" id="pwd" />
+			</div>
+			<div class="mui-input-row mui-password">
+				<input type="password" class="mui-input-password" placeholder="确认密码" id="repassword" />
+			</div>
+			<div class="mui-input-row">
+				<input type="text" class="mui-input-clear mui-input" placeholder="推荐人：ID或手机号" id="parentId"/>
+			</div>
+		</form>
+		<div class="mui-content-padded">
+			<button type="button" class="mui-btn mui-btn-block mui-badge-primary" id="register">注册</button>
+		</div>
+		<!--<div class="mui-content-padded">
+			<p>注册真实可用，注册成功后的用户可用于登录，但是示例程序并未和服务端交互，用户相关数据仅存储于本地。</p>
+		</div>-->
+	</div>
+	<script type="text/javascript" charset="utf-8">
+      	mui.init();
+      	mui.plusReady(function(){
+      		//mui.toast("ello");
+      		//复原获取验证码按钮
+      		document.getElementById("btnVerificationCode").removeAttribute("disabled");
+      		document.getElementById("btnVerificationCode").innerHTML = "获取验证码";
+      		var register = document.getElementById("register");
+      		
+      		var mobile = document.getElementById("mobile");
+      		var imageCode = document.getElementById("imageCode");
+      		var smsCode = document.getElementById("smsCode");
+      		var mpassword = document.getElementById("pwd");
+      		var repassword = document.getElementById("repassword");
+      		var parentId = document.getElementById("parentId");
+      		
+      		register.addEventListener('tap',function(){
+      			
+      			var userInfo = {
+      				"mobileNo": mobile.value,
+      				"smsCode": smsCode.value,
+      				"imageCode": imageCode.value,
+      				"passwd": mpassword.value,
+      				"parentUserNo": parentId.value
+      			};
+      			var userpwdConfirm = repassword.value;
+      			
+      			if(check(userInfo,userpwdConfirm)){
+      				//suspendBtn(register);
+      				//add_account(url + '/reg',userInfo.mobileNo,userInfo.imageCode,userInfo.passwd,userInfo.parentUserNo);
+      				plus.nativeUI.showWaiting('正在注册，请稍后...');
+		      		mui.ajax(url + '/reg',{
+		      			data:{
+		      				"mobileNo":userInfo.mobileNo,
+		      				"imageCode":userInfo.imageCode,
+		      				"passwd":userInfo.passwd,
+		      				"parentUserNo":userInfo.parentUserNo
+		      			},
+		      			dataType:'json',//服务器返回json格式数据
+						type:'post',//HTTP请求类型
+						headers:{'Content-Type':'application/json'},
+						crossDomain:true,
+		  				success:function(data){
+		  					plus.nativeUI.closeWaiting();
+		  					if(data.resultCode == '4013'){
+		  						mui.toast(data.resultMsg);
+		  						//resumeBtn(register);
+		  						return;
+		  					}else if(data.resultCode == '4014'){
+		  						//resumeBtn(register);
+		  						mui.toast(data.resultMsg);
+		  						return;
+		  					}else if(data.resultCode == '4004'){
+		  						//resumeBtn(register);
+		  						mui.toast(data.resultMsg);
+		  						return;
+		  					}else if(data.resultCode == '4009'){
+		  						//resumeBtn(register);
+		  						mui.toast(data.resultMsg);
+		  						return;
+		  					}else if(data.resultCode == '1001'){
+		  						document.getElementById("mobile").value = "";
+		  						document.getElementById("pwd").value = "";
+		  						document.getElementById("repassword").value = "";
+		  						document.getElementById("parentId").value = "";
+		  						plus.nativeUI.toast("注册成功！");
+		  						//resumeBtn(register);
+		  						setTimeout(function(){
+		  							mui.openWindow({
+		  								url:'index.html',
+		  								id:'index',
+		  								show:{
+		  									aniShow: 'pop-in'
+		  								}
+		  							});
+		  						},20);
+		  					}
+		  				},
+		  				error:function(xhr, type, errorThrown){
+		  					plus.nativeUI.closeWaiting();
+		  					mui.toast("注册出现异常！");
+		  					//resumeBtn(register);
+		  					console.log("异常" + type);
+		  				}
+		      		});
+      			}else{
+      				//document.getElementById("repassword").value = '';
+      			}
+      			//resumeBtn(register);
+      			plus.nativeUI.closeWaiting();
+      		});
+      		
+      		btnVerificationCode.addEventListener('tap',function(){
+      			if(mobile.value == ''){
+      				mui.toast("请输入手机号码");
+      				return;
+      			}
+      			if(imageCode.value == ''){
+      				mui.toast("请输入图片验证码");
+      				return;
+      			}
+      			var regex4='^1(3[0-9]|4[57]|5[0-35-9]|8[0-9]|70)\\d{8}$';//手机
+	      		var telephone = new RegExp(regex4);
+	      		//var pwd = new RegExp(regex2);
+	      		if(!telephone.test(document.getElementById("mobile").value)){
+	      			mui.toast("您输入的手机号有错误！");
+	      			return false;
+	      		}
+	    		settime();
+	    		sendSmsCode(mobile.value,imageCode.value);
+	    	});
+      	});
+      	//倒计时
+        var countdown=120;
+        function settime() { //发送验证码倒计时
+        	var code = document.getElementById("btnVerificationCode");
+            if (countdown == 0) {
+            	code.innerText = "获取验证码";
+            	code.removeAttribute("disabled");
+                //code.attr('disabled',false).attr("value", "获取验证码");
+                countdown = 120;
+                return;
+            } else {
+            	code.setAttribute("disabled", true);
+            	code.innerText = countdown + "s后重新发送";
+                //code.attr('disabled',true).attr("value", "重新发送(" + countdown + ")");
+                countdown--;
+            }
+            setTimeout(function() {
+                    settime()
+                }, 1000);
+        }
+      	function check(userInfo,userpwdConfirm){
+      		if(userInfo.mobileNo == ''){
+      			mui.toast("手机号不能为空！");
+      			return false;
+      		}
+      		/*if(userInfo.smsCode == ''){
+      			mui.toast("短信验证码不能为空！");
+      			return false;
+      		}*/
+      		if(userInfo.imageCode == ''){
+      			mui.toast("图片验证码不能为空！");
+      			return false;
+      		}
+      		if(userInfo.passwd == ''){
+      			mui.toast("密码不能为空！");
+      			return false;
+      		}
+      		if(userInfo.passwd.length < 6){
+      			mui.toast("密码长度不能小于6！");
+      			return false;
+      		}
+      		if(userpwdConfirm == ''){
+      			mui.toast("确认密码不能为空！");
+      			return false;
+      		}
+      		if(userpwdConfirm != userInfo.passwd){
+      			mui.toast("密码与确认密码不一致，请重新输入！");
+      			return false;
+      		}
+      		if(userInfo.parentUserNo == ''){
+      			mui.toast("推荐人不能为空！");
+      			return false;
+      		}
+      		var regex1 = "^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{6,12}$";   //密码6-12位的字母数字组合
+      		var regex2="^[A-Za-z0-9]+{6,12}$";  //字母或数字
+      		var regex3='^[\u4E00-\u9FA5A-Za-z0-9]+$';  //帐号中文数字字母
+      		var regex4='^1(3[0-9]|4[57]|5[0-35-9]|8[0-9]|70)\\d{8}$';//手机
+      		var telephone = new RegExp(regex4);
+      		//var pwd = new RegExp(regex2);
+      		if(!telephone.test(document.getElementById("mobile").value)){
+      			mui.toast("您输入的手机号有错误！");
+      			return false;
+      		}else{
+      			return true;
+      		}
+      		
+      	}
+      	//function add_account(url,mobileNo,imageCode,pwd,parentUserNo){}
+      	function suspendBtn(btn){
+      		btn.disabled = "disabled";
+      		btn.innerText = "正在注册";
+      	}
+      	function resumeBtn(btn){
+      		btn.disabled = "";
+      		btn.innerText = "注册";
+      	}
+      	//用于刷新验证码
+	    function myReload() {
+	        document.getElementById("imageMask").src = document.getElementById("imageMask").src + "?nocache=" + new Date().getTime();
+	    }
+    </script>
+</body>
+</html>

@@ -1,0 +1,92 @@
+.area {
+    margin: 20px auto 0px auto;
+}
+            
+.mui-input-group {
+    margin-top: 10px;
+    background-color: #F5F5F5;
+}
+            
+.mui-input-group:first-child {
+    margin-top: 20px;
+}
+            
+.mui-input-group label {
+    /*width: 16%;*/
+    padding-right: 0px;
+    /*text-align:center;*/
+}
+            
+.mui-input-row label~input,
+.mui-input-row label~select,
+.mui-input-row label~textarea {
+    /*width: 84%;*/
+    height:46px;
+}
+            
+.mui-checkbox input[type=checkbox],
+.mui-radio input[type=radio] {
+    top: 6px;
+}
+            
+.mui-content-padded {
+    margin-top: 38px;
+}
+            
+.mui-btn {
+    padding: 10px;
+}
+            
+.link-area {
+    display: block;
+    margin-top: 12px;
+    text-align: right;
+}
+            
+/*.spliter {
+    color: #bbb;
+    padding: 0px 8px;
+}
+            
+.oauth-area {
+    position: absolute;
+    bottom: 20px;
+    left: 0px;
+    text-align: center;
+    width: 100%;
+    padding: 0px;
+    margin: 0px;
+}
+            
+.oauth-area .oauth-btn {
+    display: inline-block;
+    width: 50px;
+    height: 50px;
+    background-size: 30px 30px;
+    background-position: center center;
+    background-repeat: no-repeat;
+    margin: 0px 20px;
+    border: solid 1px #ddd;
+    border-radius: 25px;
+}
+            
+.oauth-area .oauth-btn:active {
+    border: solid 1px #aaa;
+}
+            
+.oauth-area .oauth-btn.disabled {
+    background-color: #ddd;
+}*/
+
+.mui-icon{ font-size:24px;}
+.iconfont {font-size: 17px;}
+.mui-input-group .mui-input-row {height: 55px;}
+.mui-input-group .mui-input-row:after {right: 15px;}
+.mui-input-group:after,.mui-input-group:before{background-color: transparent;}
+.mui-input-group:first-child {margin-top: 10px; }
+.mui-bar-nav {box-shadow: 0 0px 0px #00B4FF;}
+.mui-bar {height: 48px;}
+    .mui-bar .mui-icon {padding-top: 25px;padding-bottom: 12px;}
+.mui-title {line-height: 48px;font-size: 18px;}
+.mui-bar-nav ~ .mui-content {padding-top: 48px;}
+body {background:#F5F5F5; }
